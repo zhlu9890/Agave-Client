@@ -6,7 +6,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 use Try::Tiny;
 
-use iPlant::FoundationalAPI ();
+use Agave::Client ();
 use Data::Dumper; 
 
 sub list_dir {
@@ -17,7 +17,7 @@ sub list_dir {
 	print "\n";
 }
 
-# this will read the configs from the ~/.iplant.foundationalapi.json file:
+# this will read the configs from the ~/.agave file:
 #	conf file content: 
 #		{   "user":"iplant_username", 
 #		    "password":"iplant_password", 
@@ -27,7 +27,7 @@ sub list_dir {
 
 # see examples/test-io.pl for another way to do auth
 #
-my $api_instance = iPlant::FoundationalAPI->new(debug => 0);
+my $api_instance = Agave::Client->new(debug => 0);
 #$api_instance->debug(0);
 
 unless ($api_instance->token) {

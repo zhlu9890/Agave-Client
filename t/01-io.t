@@ -6,7 +6,7 @@ my $TNUM = 11;
 plan tests => $TNUM;
 
 use FindBin;
-use iPlant::FoundationalAPI ();
+use Agave::Client ();
 
 my $conf_file = "$FindBin::Bin/agave-auth.json";
 
@@ -32,7 +32,7 @@ SKIP: {
     skip "Create the t/agave-auth.json file for tests to run", $TNUM
         unless (-f $conf_file);
 
-    my $api = iPlant::FoundationalAPI->new( config_file => $conf_file, http_timeout => 40);
+    my $api = Agave::Client->new( config_file => $conf_file, http_timeout => 40);
 
     ok( defined $api, "API object created");
     ok( defined $api->token, "Authentication succeeded" );
@@ -57,7 +57,7 @@ SKIP: {
     # First file is the directory itself
     my $dir = $$dir_data[0];
     ok( $dir && ref($dir), "We received an object");
-    ok( $dir->isa('iPlant::FoundationalAPI::Object::File'),  "We received the right kind of object");
+    ok( $dir->isa('Agave::Client::Object::File'),  "We received the right kind of object");
     is( $dir->name, '.', "We received the user's directory");
 
 	my $new_dir = '000-automated-test-' . rand(1000);

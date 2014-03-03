@@ -1,16 +1,16 @@
-package iPlant::FoundationalAPI::Apps;
+package Agave::Client::Apps;
 
 use warnings;
 use strict;
 
-use base qw/iPlant::FoundationalAPI::Base/;
+use base qw/Agave::Client::Base/;
 
-use iPlant::FoundationalAPI::Object::Application ();
+use Agave::Client::Object::Application ();
 use Try::Tiny;
 
 =head1 NAME
 
-iPlant::FoundationalAPI::Apps - The great new iPlant::FoundationalAPI::Apps!
+Agave::Client::Apps - The great new Agave::Client::Apps!
 
 =head1 VERSION
 
@@ -27,9 +27,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI::Apps;
+    use Agave::Client::Apps;
 
-    my $foo = iPlant::FoundationalAPI::Apps->new();
+    my $foo = Agave::Client::Apps->new();
     ...
 
 =head1 METHODS
@@ -48,7 +48,7 @@ sub list {
 	my @applications = ();
     my $list = $self->do_get('/');
     if ($list && 'ARRAY' eq ref $list) {
-        push @applications, map { new iPlant::FoundationalAPI::Object::Application($_) } @$list;
+        push @applications, map { new Agave::Client::Object::Application($_) } @$list;
     }
 
 	wantarray ? @applications : \@applications;
@@ -65,7 +65,7 @@ sub find_by_name {
 	if ($name) {
         my $list = $self->do_get('/name/' . $name);
         if ($list && 'ARRAY' eq ref $list) {
-            push @applications, map { new iPlant::FoundationalAPI::Object::Application($_) } @$list;
+            push @applications, map { new Agave::Client::Object::Application($_) } @$list;
         }
     }
 
@@ -88,7 +88,7 @@ sub find_by_id {
         };
 
 		if ($app && 'HASH' eq ref $app) {
-			push @applications, map { new iPlant::FoundationalAPI::Object::Application($_) } ($app);
+			push @applications, map { new Agave::Client::Object::Application($_) } ($app);
 		}
 	}
 	wantarray ? @applications : $applications[0];
@@ -113,7 +113,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc iPlant::FoundationalAPI::Apps
+    perldoc Agave::Client::Apps
 
 
 You can also look for information at:
@@ -155,4 +155,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-1; # End of iPlant::FoundationalAPI::Apps
+1; # End of Agave::Client::Apps

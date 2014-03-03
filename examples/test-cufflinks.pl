@@ -8,8 +8,8 @@ use lib "$Bin/../lib";
 use IO::File ();
 use File::Spec ();
 use AnyEvent ();
-use iPlant::FoundationalAPI::Constants ':all';
-use iPlant::FoundationalAPI ();
+use Agave::Client::Constants ':all';
+use Agave::Client ();
 use Data::Dumper; 
 
 my $output_dir = shift;
@@ -50,7 +50,7 @@ sub list_dir {
 # this will read the configs from the ~/.iplant.foundationalapi.json file:
 #	conf file content: 
 #		{"user":"iplant_username", "password":"iplant_password", "token":"iplant_token"}
-my $api_instance = iPlant::FoundationalAPI->new();
+my $api_instance = Agave::Client->new();
 $api_instance->debug(1);
 die "Can't auth.." unless $api_instance->auth;
 

@@ -4,7 +4,7 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use iPlant::FoundationalAPI ();
+use Agave::Client ();
 
 use Scalar::Util qw( blessed );
 use Try::Tiny;
@@ -16,12 +16,12 @@ unless (defined $remote_file) {
     die "Usage: $0 <remote_file>\n";
 }
 
-# this will read the configs from the ~/.iplant.foundationalapi.v2.json file:
+# this will read the configs from the ~/.agave file:
 #	conf file content: 
 #		{"user":"iplant_username", "password":"iplant_password", "ckey":"", "csecret":"", "token":""}
 #		# set either the password or the token
 
-my $api_instance = iPlant::FoundationalAPI->new(debug => 0);
+my $api_instance = Agave::Client->new(debug => 0);
 
 unless ($api_instance->token) {
 	print STDERR "Can't authenticate!" , $/;

@@ -1,9 +1,9 @@
-package iPlant::FoundationalAPI::Object::Job;
+package Agave::Client::Object::Job;
 
 
 =head1 NAME
 
-iPlant::FoundationalAPI::Object::Job - The great new iPlant::FoundationalAPI::Object::Job!
+Agave::Client::Object::Job - The great new Agave::Client::Object::Job!
 
 =head1 VERSION
 
@@ -21,9 +21,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI;
+    use Agave::Client;
 
-    my $apif = iPlant::FoundationalAPI->new;
+    my $apif = Agave::Client->new;
     my $job_endpoint = $apif->job;
     my $my_jobs = $job_endpoint->list;
     print $applications[0]->status;
@@ -110,4 +110,4 @@ sub is_successful {
 	$_[0]->status =~ /(ARCHIVING_)?FINISHED/
 }
 
-1; # End of iPlant::FoundationalAPI::Object::Application
+1; # End of Agave::Client::Object::Application

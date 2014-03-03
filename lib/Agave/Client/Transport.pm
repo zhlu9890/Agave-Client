@@ -1,4 +1,4 @@
-package iPlant::FoundationalAPI::Transport;
+package Agave::Client::Transport;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use warnings;
 use File::HomeDir ();
 use Try::Tiny;
 
-use iPlant::FoundationalAPI::Exceptions ();
+use Agave::Client::Exceptions ();
 
 use LWP;
 # Emit verbose HTTP traffic logs to STDERR. Uncomment

@@ -1,4 +1,4 @@
-package iPlant::FoundationalAPI::Exceptions;
+package Agave::Client::Exceptions;
 
 use Exception::Class (
     'Agave::Exceptions',

@@ -1,4 +1,4 @@
-package iPlant::FoundationalAPI::IO;
+package Agave::Client::IO;
 
 use warnings;
 use strict;
@@ -8,13 +8,13 @@ use URI::Escape;
 use Try::Tiny;
 use Data::Dumper;
 
-use iPlant::FoundationalAPI::Object::File;
-use base qw/iPlant::FoundationalAPI::Base/;
+use Agave::Client::Object::File;
+use base qw/Agave::Client::Base/;
 
 
 =head1 NAME
 
-iPlant::FoundationalAPI::IO - The great new iPlant::FoundationalAPI::IO!
+Agave::Client::IO - The great new Agave::Client::IO!
 
 =head1 VERSION
 
@@ -33,8 +33,8 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI::IO;
-    my $foo = iPlant::FoundationalAPI::IO->new();
+    use Agave::Client::IO;
+    my $foo = Agave::Client::IO->new();
     my $io = $foo->io;
     ...
 
@@ -60,7 +60,7 @@ sub readdir {
 	}
 
 	my $list = $self->do_get('/listings' . $path);
-	return @$list ? [map {iPlant::FoundationalAPI::Object::File->new($_)} @$list] : [];
+	return @$list ? [map {Agave::Client::Object::File->new($_)} @$list] : [];
 }
 
 =head2 ls
@@ -245,7 +245,7 @@ sub upload {
 		$mref = eval {$json->decode( $message );};
 		if ($mref) {
 			if ($mref->{status} eq 'success') {
-				return iPlant::FoundationalAPI::Object::File->new($mref->{result});
+				return Agave::Client::Object::File->new($mref->{result});
 			}
 			else {
 				print STDERR "::upload error: ", $mref->{message}, $/;
@@ -347,7 +347,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc iPlant::FoundationalAPI::IO
+    perldoc Agave::Client::IO
 
 
 You can also look for information at:
@@ -391,4 +391,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 }
 
-1; # End of iPlant::FoundationalAPI::IO
+1; # End of Agave::Client::IO

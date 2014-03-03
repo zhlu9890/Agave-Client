@@ -1,10 +1,9 @@
-package iPlant::FoundationalAPI::Base;
+package Agave::Client::Base;
 
-#use 5.010000;
 use strict;
 use warnings;
 
-use base 'iPlant::FoundationalAPI::Transport';
+use base 'Agave::Client::Transport';
 
 
 sub new {

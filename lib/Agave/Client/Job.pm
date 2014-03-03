@@ -1,18 +1,18 @@
-package iPlant::FoundationalAPI::Job;
+package Agave::Client::Job;
 
 use warnings;
 use strict;
 
-use base qw/iPlant::FoundationalAPI::Base/;
+use base qw/Agave::Client::Base/;
 
-use iPlant::FoundationalAPI::Object::Job ();
+use Agave::Client::Object::Job ();
 use Try::Tiny;
 
 use Data::Dumper;
 
 =head1 NAME
 
-iPlant::FoundationalAPI::Job - The great new iPlant::FoundationalAPI::Job!
+Agave::Client::Job - The great new Agave::Client::Job!
 
 =head1 VERSION
 
@@ -29,9 +29,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI::Job;
+    use Agave::Client::Job;
 
-    my $foo = iPlant::FoundationalAPI::Job->new();
+    my $foo = Agave::Client::Job->new();
     ...
 
 =head1 METHODS
@@ -44,7 +44,7 @@ Perhaps a little code snippet.
 
 	$apps = $api_instance->apps;
 	$job = $api_instance->job;
-	($ap) = $apps->find_by_name("name"); #iPlant::FoundationalAPI::Object::Application
+	($ap) = $apps->find_by_name("name"); #Agave::Client::Object::Application
 	$job->submit_job($ap, %arguments)
 
 =cut
@@ -111,7 +111,7 @@ sub submit_job {
         };
 	if (ref $resp) {
 		if ($resp->{id}) {
-			return { status => 'success', data => iPlant::FoundationalAPI::Object::Job->new($resp) };
+			return { status => 'success', data => Agave::Client::Object::Job->new($resp) };
 		}
 		return $resp;
 	}
@@ -126,7 +126,7 @@ sub job_details {
 
 	my $data = $self->do_get('/' . $job_id);
 	if ('HASH' eq ref $data) {
-		return iPlant::FoundationalAPI::Object::Job->new($data);
+		return Agave::Client::Object::Job->new($data);
 	}
 
 	return $data;
@@ -146,7 +146,7 @@ sub jobs {
 	my ($self) = @_;
 
 	my $list = $self->do_get('/');
-	return @$list ? [map {iPlant::FoundationalAPI::Object::Job->new($_)} @$list] : [];
+	return @$list ? [map {Agave::Client::Object::Job->new($_)} @$list] : [];
 }
 
 
@@ -194,7 +194,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc iPlant::FoundationalAPI
+    perldoc Agave::Client
 
 =head1 ACKNOWLEDGEMENTS
 
@@ -205,4 +205,4 @@ Copyright 2011 Cornel Ghiban.
 
 =cut
 
-1; # End of iPlant::FoundationalAPI::Job
+1; # End of Agave::Client::Job

@@ -5,7 +5,7 @@ use strict;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use iPlant::FoundationalAPI ();
+use Agave::Client ();
 use Data::Dumper; 
 
 sub list_dir {
@@ -23,7 +23,7 @@ unless (defined $path) {
     die "Usage: $0 <remote_file> [user]\n";
 }
 
-my $api_instance = iPlant::FoundationalAPI->new(hostname => 'iplant-dev.tacc.utexas.edu', debug => 0);
+my $api_instance = Agave::Client->new(debug => 0);
 #$api_instance->debug(1);
 
 unless ($api_instance->token) {

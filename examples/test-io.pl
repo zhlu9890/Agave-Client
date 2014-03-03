@@ -5,7 +5,7 @@ use common::sense;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use iPlant::FoundationalAPI ();
+use Agave::Client ();
 use Data::Dumper; 
 
 sub list_dir {
@@ -23,7 +23,7 @@ if (0) {
 		exit;
 	}
 
-	my $api_instance = iPlant::FoundationalAPI->new(
+	my $api_instance = Agave::Client->new(
 			hostname => 'agave.iplantc.org',
             ckey => '...',
             csecret => '...',
@@ -35,13 +35,13 @@ if (0) {
 }
 ## or
 
-# this will read the configs from the ~/.iplant.foundationalapi.v2.json file:
+# this will read the configs from the ~/.agave file:
 #	conf file content: 
 #		{"user":"iplant_username", "password":"iplant_password", "ckey":"", "csecret":"", "token":""}
 #		# set either the password or the token
 
-#my $api_instance = iPlant::FoundationalAPI->new(debug => 1);
-my $api_instance = iPlant::FoundationalAPI->new(debug => 0);
+#my $api_instance = Agave::Client->new(debug => 1);
+my $api_instance = Agave::Client->new(debug => 0);
 
 unless ($api_instance->token) {
     warn "\nError: Authentication failed!\n";

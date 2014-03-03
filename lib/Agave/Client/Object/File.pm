@@ -1,9 +1,9 @@
-package iPlant::FoundationalAPI::Object::File;
+package Agave::Client::Object::File;
 
 
 =head1 NAME
 
-iPlant::FoundationalAPI::Object::File - The great new iPlant::FoundationalAPI::Object::File!
+Agave::Client::Object::File
 
 =head1 VERSION
 
@@ -21,9 +21,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI::IO;
+    use Agave::Client::IO;
 
-    my $apif = iPlant::FoundationalAPI->new;
+    my $apif = Agave::Client->new;
     my $io = $apif->io;
     my @files = $io->list($path);
 	my $file = $files[0];
@@ -108,4 +108,4 @@ sub TO_JSON {
 }
 
 
-1; # End of iPlant::FoundationalAPI::Object::File
+1; # End of Agave::Client::Object::File

@@ -1,31 +1,30 @@
-package iPlant::FoundationalAPI;
+package Agave::Client;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-iPlant::FoundationalAPI - The great new iPlant::FoundationalAPI!
+Agave::Client - A Perl wrapper for Agave API!
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
-use base 'iPlant::FoundationalAPI::Base';
+use base 'Agave::Client::Base';
 
-use iPlant::FoundationalAPI::IO ();
-#use iPlant::FoundationalAPI::Data ();
-use iPlant::FoundationalAPI::Apps ();
-use iPlant::FoundationalAPI::Auth ();
-use iPlant::FoundationalAPI::Job ();
+use Agave::Client::IO ();
+use Agave::Client::Apps ();
+use Agave::Client::Auth ();
+use Agave::Client::Job ();
 
 # Needed to emit the curl-compatible form when DEBUG is enabled
 use URI::Escape;
-# For handling the JSON that comes back from iPlant services
+# For handling the JSON that comes back from iPlant/Agave services
 use JSON::XS ();
 
 use Data::Dumper;
@@ -36,9 +35,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI;
+    use Agave::Client;
 
-    my $api = iPlant::FoundationalAPI->new();
+    my $api = Agave::Client->new();
     ...
 
 =head1 FUNCTIONS
@@ -46,10 +45,10 @@ Perhaps a little code snippet.
 =cut
 
 my @config_files = qw(
-   ./iplant.foundationalapi.v2.json
-   ~/.iplant.foundationalapi.v2.json 
-   ~/Library/Preferences/iplant.foundationalapi.v2.json
-   /etc/iplant.foundationalapi.v2.json
+   ./agave
+   ~/.agave 
+   ~/Library/Preferences/agave
+   /etc/agave
 );
 
 =head2 new
@@ -135,7 +134,7 @@ sub _auto_config {
 sub _init_auth {
 	my ($self) = @_;
 	
-	my $auth = iPlant::FoundationalAPI::Auth->new($self);
+	my $auth = Agave::Client::Auth->new($self);
 	if ($auth && $auth->token) {
 		$self->{token} = $auth->token;
 		$auth->debug($self->{debug});
@@ -153,22 +152,17 @@ sub auth {
 
 sub io {
 	my $self = shift;
-	return iPlant::FoundationalAPI::IO->new($self);
-}
-
-sub data {
-	my $self = shift;
-	return iPlant::FoundationalAPI::Data->new($self);
+	return Agave::Client::IO->new($self);
 }
 
 sub apps {
 	my $self = shift;
-	return iPlant::FoundationalAPI::Apps->new($self);
+	return Agave::Client::Apps->new($self);
 }
 
 sub job {
 	my $self = shift;
-	return iPlant::FoundationalAPI::Job->new($self);
+	return Agave::Client::Job->new($self);
 }
 
 sub token_expiration {
@@ -189,14 +183,9 @@ sub debug {
 
 =head1 AUTHOR
 
-Cornel Ghiban, C<< <ghiban at cshl.edu> >>
+Cornel Ghiban, C<< <cghiban at gmail.com> >>
 
 =head1 BUGS
-
-Please report any bugs or feature requests to C<bug-iplant-foundationalapi at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=iPlant-FoundationalAPI>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
 
 
 
@@ -204,28 +193,14 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc iPlant::FoundationalAPI
+    perldoc Agave::Client
 
 
 You can also look for information at:
 
 =over 4
 
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=iPlant-FoundationalAPI>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/iPlant-FoundationalAPI>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/iPlant-FoundationalAPI>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/iPlant-FoundationalAPI/>
+http://agaveapi.co/
 
 =back
 
@@ -235,7 +210,7 @@ L<http://search.cpan.org/dist/iPlant-FoundationalAPI/>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2011 Cornel Ghiban.
+Copyright 2014 Cornel Ghiban.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
@@ -246,4 +221,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-1; # End of iPlant::FoundationalAPI
+1; # End of Agave::Client

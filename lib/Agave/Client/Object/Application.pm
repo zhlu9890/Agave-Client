@@ -1,10 +1,10 @@
-package iPlant::FoundationalAPI::Object::Application;
+package Agave::Client::Object::Application;
 
 use overload '""' => sub { $_[0]->id; };
 
 =head1 NAME
 
-iPlant::FoundationalAPI::Object::Application - The great new iPlant::FoundationalAPI::Object::Application!
+Agave::Client::Object::Application - The great new Agave::Client::Object::Application!
 
 =head1 VERSION
 
@@ -20,9 +20,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI;
+    use Agave::Client;
 
-    my $apif = iPlant::FoundationalAPI->new;
+    my $apif = Agave::Client->new;
     my $apps = $apif->apps;
     my $applications = $apps->list;
     print $applications[0]->id;
@@ -109,4 +109,4 @@ sub TO_JSON {
 	return $href;
 }
 
-1; # End of iPlant::FoundationalAPI::Object::Application
+1; # End of Agave::Client::Object::Application

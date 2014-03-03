@@ -6,7 +6,7 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 use Try::Tiny;
 
-use iPlant::FoundationalAPI ();
+use Agave::Client ();
 use Data::Dumper; 
 
 sub list_dir {
@@ -27,7 +27,7 @@ sub list_dir {
 
 # see examples/test-io.pl for another way to do auth
 #
-my $api_instance = iPlant::FoundationalAPI->new(debug => 0);
+my $api_instance = Agave::Client->new(debug => 0);
 #$api_instance->debug(0);
 
 unless ($api_instance->token) {
@@ -106,7 +106,7 @@ unless (defined $file_path) {
 }
 my $io = $api_instance->io;
 my $file_info = $io->readdir($file_path);
-unless ($file_info || 'iPlant::FoundationalAPI::Object::File' eq ref $file_info) {
+unless ($file_info || 'Agave::Client::Object::File' eq ref $file_info) {
     print STDERR  "File not found: ", $file_info, $/;
     exit 1;
 }

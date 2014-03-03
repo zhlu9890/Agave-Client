@@ -3,11 +3,11 @@
 use Test::More tests => 5;
 
 BEGIN {
-    use_ok( 'iPlant::FoundationalAPI' );
-    use_ok( 'iPlant::FoundationalAPI::IO' );
-    use_ok( 'iPlant::FoundationalAPI::Auth' );
-    use_ok( 'iPlant::FoundationalAPI::Apps' );
-    use_ok( 'iPlant::FoundationalAPI::Job' );
+    use_ok( 'Agave::Client' );
+    use_ok( 'Agave::Client::IO' );
+    use_ok( 'Agave::Client::Auth' );
+    use_ok( 'Agave::Client::Apps' );
+    use_ok( 'Agave::Client::Job' );
 }
 
-diag( "Testing iPlant::FoundationalAPI $iPlant::FoundationalAPI::VERSION, Perl $], $^X" );
+diag( "Testing Agave::Client $Agave::Client::VERSION, Perl $], $^X" );

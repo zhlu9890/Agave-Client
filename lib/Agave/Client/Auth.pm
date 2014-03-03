@@ -1,16 +1,16 @@
-package iPlant::FoundationalAPI::Auth;
+package Agave::Client::Auth;
 
 use warnings;
 use strict;
 
-use base 'iPlant::FoundationalAPI::Base';
+use base 'Agave::Client::Base';
 use MIME::Base64;
 use Try::Tiny;
 use Data::Dumper;
 
 =head1 NAME
 
-iPlant::FoundationalAPI::Auth - The great new iPlant::FoundationalAPI::Auth!
+Agave::Client::Auth - The great new Agave::Client::Auth!
 
 =head1 VERSION
 
@@ -29,9 +29,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use iPlant::FoundationalAPI::Auth;
+    use Agave::Client::Auth;
 
-    my $foo = iPlant::FoundationalAPI::Auth->new();
+    my $foo = Agave::Client::Auth->new();
     ...
 
 =head1 FUNCTIONS
@@ -232,7 +232,7 @@ Please report any bugs or feature requests to the above email address.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc iPlant::FoundationalAPI::Auth
+    perldoc Agave::Client::Auth
 
 
 You can also look for information at:
@@ -262,4 +262,4 @@ See http://dev.perl.org/licenses/ for more information.
 
 =cut
 
-1; # End of iPlant::FoundationalAPI::Auth
+1; # End of Agave::Client::Auth
