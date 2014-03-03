@@ -1,7 +1,6 @@
-iPlant-FoundationalAPI
+Agave::Client
 
-Inspired by Matt W. Vaughn's work iPlantFoundationAPIAdapter found at
-https://github.com/mwvaughn/iPlantFoundationAPIAdapter
+Perl client for Agave API (http://agaveapi.co)
 
 The README is used to introduce the module and provide instructions on
 how to install the module, any machine dependencies it may have (for
@@ -23,17 +22,11 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc iPlant::FoundationalAPI
+    perldoc Agave::Client
 	
-	export IPLANT_USERNAME=iplant_username IPLANT_PASSWORD=iplant_token/iplant_password
-	perl scripts/test.pl
+	perl examples/test-io.pl
 
-You can also look for information at:
 
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=iPlant-FoundationalAPI
-
-    iPlant's Wiki documentation page
-        https://pods.iplantcollaborative.org/wiki/display/docs/Foundational+API+v1.0
-
+Inspired by Matt W. Vaughn's work iPlantFoundationAPIAdapter found at
+https://github.com/mwvaughn/iPlantFoundationAPIAdapter
 
