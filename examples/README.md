@@ -13,6 +13,11 @@ To download a file:
 
 	perl examples/test-io-download-file.pl Bx_2.fa
 
+To list apps:
+
+	perl examples/test-apps.pl # only top 10 apps - sorted by name
+	perl examples/test-apps.pl --all
+
 To get submit an app:
 
 	perl examples/test-apps.pl <app-id|app-name> <file from data store>

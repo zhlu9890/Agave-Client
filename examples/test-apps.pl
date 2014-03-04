@@ -38,6 +38,13 @@ unless ($api_instance->token) {
 my $app_id = shift;
 my $file_path = shift;
 
+my $show_all_apps = undef;
+
+if ($app_id eq '-a' || $app_id eq '--all') {
+    $show_all_apps = 1;
+    $app_id = undef;
+}
+
 my $base_dir = '/' . $api_instance->user;
 #print "Working in [", $base_dir, "]", $/;
 
@@ -65,7 +72,7 @@ unless ($app_id) {
             $_->rethrow;
         };
     @list = sort {$a->{id} cmp $b->{id}} @list;
-    for my $ap (scalar @list > 10 ? @list[0..9] : @list) {
+    for my $ap (!$show_all_apps && scalar @list > 10 ? @list[0..9] : @list) {
         print "\t", $ap, "    [", $ap->shortDescription, "]\n";
     }
 
@@ -86,10 +93,10 @@ if ($ap_wc) {
 	print "\tInputs: \n";
 	print "\t\t", $_->{id}, " - ", $_->{details}->{label} for ($ap_wc->inputs);
     if (@{$ap_wc->parameters}) {
-    	print "\n\tParams: \n";
-    	print "\t\t", $_->{id} for ($ap_wc->parameters);
+        print "\n\tParams: \n";
+        print "\t\t", $_->{id}, "\n" for ($ap_wc->parameters);
     }
-	print "\n\n";
+	print "\n";
 }
 else {
 	print "\t No application found with name '$app_id'\n";
