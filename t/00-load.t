@@ -1,11 +1,12 @@
 #!/usr/bin/env perl
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 BEGIN {
     use_ok( 'Agave::Client' );
     use_ok( 'Agave::Client::IO' );
     use_ok( 'Agave::Client::Auth' );
+    use_ok( 'Agave::Client::Client' );
     use_ok( 'Agave::Client::Apps' );
     use_ok( 'Agave::Client::Job' );
 }
