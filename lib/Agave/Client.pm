@@ -13,7 +13,7 @@ Version 0.02
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.3.0';
 
 use base 'Agave::Client::Base';
 
@@ -60,6 +60,8 @@ sub new {
 	my $proto = shift;
 	my %args = @_;
 	my $class = ref($proto) || $proto;
+
+    $args{user} ||= delete $args{username};
 	
 	my $self  = {
             hostname => delete $args{hostname} || 'agave.iplantc.org',

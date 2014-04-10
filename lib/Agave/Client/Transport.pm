@@ -16,11 +16,11 @@ use HTTP::Request::Common qw(POST);
 # Needed to emit the curl-compatible form when DEBUG is enabled
 #use URI::Escape;
 use JSON ();
-use MIME::Base64 qw(encode_base64);
 use Data::Dumper;
 
-our $VERSION = '0.2.1';
-use vars qw($VERSION);
+our $VERSION = '0.3.0';
+our $AGENT = "AgavePerlClient/$VERSION";
+use vars qw($VERSION $AGENT);
 
 {
     # these should be moved to a config file (or not?)
@@ -29,10 +29,9 @@ use vars qw($VERSION);
 
     # Never subject to configuration
     my $ZONE = 'iPlant Job Service';
-    my $AGENT = "DNALCRobot/$VERSION";
 
     # Define API endpoints
-    my $IO_ROOT = "files/2.0";
+    my $IO_ROOT = "files/v2";
     my $IO_END = "$IO_ROOT";
 
     #my $AUTH_ROOT = "v2/auth";
@@ -41,8 +40,9 @@ use vars qw($VERSION);
     my $DATA_ROOT = "data-v1";
     my $DATA_END = "$DATA_ROOT/data";
 
-    my $APPS_END = "apps/2.0";
-    my $JOBS_END = "jobs/2.0";
+    my $APPS_END = "apps/v2";
+    my $JOBS_END = "jobs/v2";
+    my $CLIENTS_END = "clients/v2";
 
     my $TRANSPORT = 'https';
 
@@ -51,11 +51,9 @@ use vars qw($VERSION);
             io => $IO_END,
             data => $DATA_END,
             apps => $APPS_END,
-            #jobs => $JOBS_END,
             job  => $JOBS_END,
+            client => $CLIENTS_END,
         );
-
-
 
     sub _get_end_point {
         my $self = shift;
@@ -85,7 +83,7 @@ use vars qw($VERSION);
         }
         print STDERR  "::do_get: path: ", $path, $/ if $self->debug;
 
-        my $ua = _setup_user_agent($self);
+        my $ua = $self->_setup_user_agent;
         my ($req, $res);
 
         if (defined $params{limit_size} || defined $params{save_to} || defined $params{stream_to_stdout}) {
@@ -209,7 +207,7 @@ use vars qw($VERSION);
             $content .= "$k=$v&";
         }
 
-        my $ua = _setup_user_agent($self);
+        my $ua = $self->_setup_user_agent;
         #print STDERR Dumper( $ua), $/;
         print STDERR "\n$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path, "\n" if $self->debug;
         my $req = HTTP::Request->new(PUT => "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path);
@@ -242,7 +240,7 @@ use vars qw($VERSION);
 
     sub do_delete {
 
-        my ($self, $path) = @_;
+        my ($self, $path, %params) = @_;
 
         my $END_POINT = $self->_get_end_point;
         unless ($END_POINT) {
@@ -257,9 +255,9 @@ use vars qw($VERSION);
         }
         print STDERR  "DELETE Path: ", $path, $/ if $self->debug;
 
-        my $ua = _setup_user_agent($self);
+        my $ua = $self->_setup_user_agent;
         my $req = HTTP::Request->new(DELETE => "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path);
-        my $res = $ua->request($req);
+        my $res = $ua->request($req, \%params);
         
         print STDERR "\nDELETE => $TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path, "\n" if $self->debug;
         
@@ -267,6 +265,7 @@ use vars qw($VERSION);
         my $message;
         my $mref;
         
+        $DB::single = 1;
         if ($res->is_success) {
             $message = $res->content;
             print STDERR $message, "\n" if $self->debug;
@@ -274,12 +273,12 @@ use vars qw($VERSION);
             my $json = JSON->new->allow_nonref;
             $mref = eval { $json->decode( $message ); };
             if ($mref && $mref->{status} eq 'success') {
-                return 1;
+                return $mref;
             }
             return $mref;
         }
         else {
-            print STDERR (caller(0))[3], " ", $res->status_line, "\n";
+            print STDERR 'do_delete: ', (caller(0))[3], " ", $res->status_line, "\n";
             Agave::Exceptions::HTTPError->throw(
                 code => $res->code,
                 message => $res->message,
@@ -341,7 +340,12 @@ use vars qw($VERSION);
             if ($content =~ /"status":/) {
                 $mref = eval {$json->decode( $content );};
                 if ($mref && $mref->{status}) {
-                    return {status => "error", message => $mref->{message} || $res->status_line};
+                    #return {status => "error", message => $mref->{message} || $res->status_line};
+                    Agave::Exceptions::HTTPError->throw(
+                            code => $res->code,
+                            message => $mref->{message} || $res->status_line,
+                            content => $content,
+                        );
                 }
             }
             return {status => "error", message => $res->status_line};
@@ -349,6 +353,7 @@ use vars qw($VERSION);
     }
 
     # Transport-level Methods
+    # !! may be overridden in child classes
     sub _setup_user_agent {
 
         my $self = shift;
@@ -369,15 +374,6 @@ use vars qw($VERSION);
 
         return $ua;
 
-    }
-
-    sub _encode_credentials {
-
-        # u is always an iPlant username
-        # p can be either a password or RSA encrypted token
-
-        my ($u, $p) = @_;
-        encode_base64("$u:$p");
     }
 
     sub debug {

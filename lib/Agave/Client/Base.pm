@@ -23,6 +23,8 @@ sub user {
 	return $self->{user};
 }
 
+*username = \&user;
+
 sub password {
 	my $self = shift;
 	if (@_) { $self->{password} = shift }
