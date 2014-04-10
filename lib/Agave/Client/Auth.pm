@@ -14,11 +14,11 @@ Agave::Client::Auth - The great new Agave::Client::Auth!
 
 =head1 VERSION
 
-Version 0.2.2
+Version 0.3.0
 
 =cut
 
-our $VERSION = '0.2.2';
+our $VERSION = '0.3.0';
 
 my $TRANSPORT = 'https';
 
@@ -44,15 +44,21 @@ sub new {
 	my ($proto, $args) = @_;
 	my $class = ref($proto) || $proto;
 	
-	my $self  = { map {$_ => $args->{$_}} grep {/^(?:user|token|password|hostname|lifetime|csecret|ckey|http_timeout|debug)$/} keys %$args};
+	my $self  = { map {$_ => $args->{$_}} grep {/^(?:user|token|password|hostname|lifetime|apisecret|apikey|refresh_token|http_timeout|client|debug)$/} keys %$args};
 	
 	bless($self, $class);
+
+    # if client specified..
+    if ($self->{client}) {
+        #my $client = 1;
+        # get client, apikey
+    }
 
 	if ($self->{user} && $self->{token}) {
         unless ($self->is_token_valid) {
             # we should catch this and switch to password authentication
             # will try to get a new token, if the password was provided
-	        delete $self->{token};
+            #delete $self->{token};
 		}
 		else {
 			print STDERR  "Token validated successfully", $/ if $self->debug;
@@ -80,7 +86,7 @@ sub _auth_post_token {
     #}
 
 	my $ua = $self->_setup_user_agent;
-	$ua->default_header( Authorization => 'Basic ' . _encode_credentials($self->{ckey}, $self->{csecret}) );
+	$ua->default_header( Authorization => 'Basic ' . _encode_credentials($self->{apikey}, $self->{apisecret}) );
 	
 	my $auth_ep = $self->_get_end_point;
 	my $url = "https://" . $self->hostname . "/$auth_ep";

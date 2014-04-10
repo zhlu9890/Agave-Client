@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 
 BEGIN {
     use_ok( 'Agave::Client' );

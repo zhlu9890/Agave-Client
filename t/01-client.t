@@ -18,7 +18,6 @@ my $env_set = defined $ENV{AGAVE_USERNAME} ne "" && $ENV{AGAVE_USERNAME} ne ""
         && defined $ENV{AGAVE_PASSWORD} && $ENV{AGAVE_PASSWORD} ne "";
 
 my $conf_file = "$FindBin::Bin/agave-auth.json";
-print STDERR  $conf_file, $/;
 
 diag <<EOF
 

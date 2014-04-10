@@ -61,16 +61,14 @@ sub new {
 	my %args = @_;
 	my $class = ref($proto) || $proto;
 
-    $args{user} ||= delete $args{username};
-	
 	my $self  = {
             hostname => delete $args{hostname} || 'agave.iplantc.org',
             iplanthome => '/iplant/home/',
             processors => 1,
             run_time => '01:00:00',
-            csecret => $args{csecret} || '',
-            ckey => $args{ckey} || '',
-            user => $args{user} || '',
+            apisecret => $args{apisecret} || '',
+            apikey => $args{apikey} || '',
+            user => $args{user} || delete $args{username} || '',
             password => $args{password} || '',
             token => $args{token} || '',
             credential_class => $args{credential_class} || 'self',
@@ -79,10 +77,17 @@ sub new {
             auth => undef,
             debug => defined $args{debug} ? delete $args{debug} : undef,
         };
-	
+
     my $config_file = defined $args{config_file} ? delete $args{config_file} : undef;
     $self = _auto_config($self, $config_file) unless %args;
-	
+
+    if (defined $self->{username}) {
+        $self->{user} = delete $self->{username};
+    }
+    if (defined $self->{access_token}) {
+        $self->{token} = delete $self->{access_token};
+    }
+		
 	if ($self->{user} && ($self->{token} || $self->{password})) {
 		_init_auth($self);
 	}
