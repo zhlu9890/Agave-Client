@@ -48,24 +48,26 @@ sub new {
 	
 	bless($self, $class);
 
-    # if client specified..
-    if ($self->{client}) {
-        #my $client = 1;
-        # get client, apikey
-    }
-
 	if ($self->{user} && $self->{token}) {
         unless ($self->is_token_valid) {
             # we should catch this and switch to password authentication
             # will try to get a new token, if the password was provided
-            #delete $self->{token};
+            delete $self->{token};
 		}
 		else {
 			print STDERR  "Token validated successfully", $/ if $self->debug;
 		}
 	}
 
-	if ($self->{user} && $self->{password} && !$self->{token}) {
+
+    # if client specified..
+    if ($self->{client}) {
+        #my $client = 1;
+        # get client, apikey
+    }
+
+
+	if ($self->{user} && $self->{apikey} && $self->{apisecret} && !$self->{token}) {
 		# hit auth service for a new token
 		my $newToken = $self->_auth_post_token();
 		print STDERR "Issued-Token: ", $newToken, "\n" if $self->debug;

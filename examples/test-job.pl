@@ -21,14 +21,15 @@ sub list_dir {
 #	conf file content: 
 #		{   "user":"iplant_username", 
 #		    "password":"iplant_password", 
-#		    "token":"iplant_token"
+#           "apikey":"", 
+#           "apisecret":""
 #		}
 #		# set either the password or the token
 
 # see examples/test-io.pl for another way to do auth
 #
 my $api_instance = Agave::Client->new(debug => 0);
-#$api_instance->debug(0);
+#$api_instance->debug(1);
 
 unless ($api_instance->token) {
 	print STDERR "Can't authenticate!" , $/;
@@ -58,7 +59,7 @@ $job_ep->debug(0);
 
 if ($job_id) {
     my $tries = 0;
-    while ($tries++ < 50) {
+    while ($tries++ < 100) {
         my $j = $job_ep->job_details($job_id);
         #print STDERR Dumper( $j ), $/;
         my $job_status = $j->status;

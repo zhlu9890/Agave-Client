@@ -87,8 +87,13 @@ sub new {
     if (defined $self->{access_token}) {
         $self->{token} = delete $self->{access_token};
     }
-		
-	if ($self->{user} && ($self->{token} || $self->{password})) {
+
+	if ( $self->{user} 
+        && (
+            ($self->{apikey} && $self->{apisecret}) 
+            || ($self->{token} || $self->{password})
+        )) 
+    {
 		_init_auth($self);
 	}
 

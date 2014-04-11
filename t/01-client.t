@@ -14,8 +14,8 @@ use Try::Tiny;
 use Agave::Client ();
 use Agave::Client::Client ();
 
-my $env_set = defined $ENV{AGAVE_USERNAME} ne "" && $ENV{AGAVE_USERNAME} ne "" 
-        && defined $ENV{AGAVE_PASSWORD} && $ENV{AGAVE_PASSWORD} ne "";
+my $env_set = (defined $ENV{AGAVE_USERNAME} || defined $ENV{IPLANT_USERNAME}) 
+            && (defined $ENV{AGAVE_PASSWORD} || $ENV{IPLANT_PASSWORD});
 
 my $conf_file = "$FindBin::Bin/agave-auth.json";
 
@@ -28,7 +28,6 @@ Also, the t/agave-auth.json is missing. Here's the structure:
     {
         "username"  :"", 
         "password"  :"",
-        "client":   :"", # optional for this test
         "apisecret" :"", # optional for this test
         "apikey"    :""  # optional for this test
     }
@@ -46,14 +45,13 @@ unless ($env_set || -f $conf_file);
 my ($u, $p);
 
 if ($env_set) {
-    ($u, $p) = map {$ENV{ $_ }} qw/AGAVE_USERNAME AGAVE_PASSWORD/;
+    ($u, $p) = map {$ENV{ "IPLANT_$_" } || $ENV{"AGAVE_$_"}} (qw/USERNAME PASSWORD/);
 }
 else {
     my $json_text = read_file($conf_file);
     my $config = decode_json($json_text);
     ($u, $p) = ($$config{username} || $$config{user}, $$config{password})
 }
-
 
 SKIP: {
     skip "Create the t/agave-auth.json file for tests to run", $TNUM
@@ -69,14 +67,17 @@ SKIP: {
     ok( defined $apic, "API Client object created");
     isa_ok( $apic, 'Agave::Client::Client' );
 
+    $DB::single = 1;
+    my $clients = $apic->clients;
+    is(ref $clients, 'ARRAY', "Received list of clients as an arrayref.");
+
     my $new_client_name = 'agave-test-' . int(rand(1_000_000)) . '-' . time();
 
     my $client = $apic->create({ name => $new_client_name });
     is(ref $client, 'HASH', "New client received is a hashref.");
 
-    my $clients = $apic->clients;
-    is(ref $clients, 'ARRAY', "Received a list of client as an arrayref.");
-
+    # refetch the client's list
+    $clients = $apic->clients;
     my @filter_result = grep {$_->{name} eq $new_client_name} @$clients;
     ok(scalar @filter_result, "Found new client among all clients..");
 
@@ -101,31 +102,4 @@ SKIP: {
 
 }
 
-__END__
-    # read users directory 
-    my $base_dir = '/' . $api->user;
-	my $dir_data = eval {$io->readdir($base_dir);};
-    if (my $err = $@) {
-        diag(ref $err ? $err->message . "\n" . $err->content : $err);
-    }
-    ok( defined $dir_data, "Received IO response");
-    ok( 'ARRAY' eq ref $dir_data, "IO response is valid");
-    ok( @$dir_data > 0, "We have at least one file/dir");
-
-    # First file is the directory itself
-    my $dir = $$dir_data[0];
-    ok( $dir && ref($dir), "We received an object");
-    ok( $dir->isa('Agave::Client::Object::File'),  "We received the right kind of object");
-    is( $dir->name, '.', "We received the user's directory");
-
-	my $new_dir = '000-automated-test-' . rand(1000);
-	my $st = $io->mkdir($base_dir, $new_dir);
-    is( $st->{status}, 'success', "Directory created successfully");
-    diag("Directory not removed: " . $st->{message})
-        unless( $st->{status} eq 'success' );
-
-	$st = $io->remove($base_dir . '/' . $new_dir);
-    ok ( $st, "Directory removed successfully");
-
-}
 

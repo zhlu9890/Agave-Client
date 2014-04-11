@@ -17,11 +17,12 @@ sub list_dir {
 	print "\n";
 }
 
-# this will read the configs from the ~/.iplant.foundationalapi.json file:
+# this will read the configs from the ~/.agave file:
 #	conf file content: 
-#		{   "user":"iplant_username", 
+#		{   "username":"iplant_username", 
 #		    "password":"iplant_password", 
-#		    "token":"iplant_token"
+#		    "apisecret":"agave_secret",
+#		    "apikey":"agave_key",
 #		}
 #		# set either the password or the token
 
@@ -108,9 +109,9 @@ else {
 # JOB
 #
 
-unless (defined $file_path) {
-    exit 0;
-}
+#unless (defined $file_path) {
+#    exit 0;
+#}
 my $io = $api_instance->io;
 my $file_info = $io->readdir($file_path);
 unless ($file_info || 'Agave::Client::Object::File' eq ref $file_info) {
@@ -120,7 +121,7 @@ unless ($file_info || 'Agave::Client::Object::File' eq ref $file_info) {
 #list_dir($file_info);
 
 my $job_ep = $api_instance->job;
-$job_ep->debug(1);
+$job_ep->debug(0);
 
 my $job_id = 0;
 if ($ap_wc) {

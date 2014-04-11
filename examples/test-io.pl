@@ -18,17 +18,17 @@ sub list_dir {
 
 # one way to authenticate
 if (0) {
-	unless (defined $ENV{IPLANT_USERNAME} && (defined $ENV{IPLANT_PASSWORD} || $ENV{IPLANT_TOKEN})) {
-		print "Env variables IPLANT_USERNAME and IPLANT_PASSWORD or IPLANT_TOKEN are undefined", $/;
+	unless (defined $ENV{IPLANT_USERNAME} && (defined $ENV{IPLANT_PASSWORD} || $ENV{AGAVE_TOKEN})) {
+		print "Env variables IPLANT_USERNAME and IPLANT_PASSWORD or AGAVE_TOKEN are undefined", $/;
 		exit;
 	}
 
 	my $api_instance = Agave::Client->new(
 			hostname => 'agave.iplantc.org',
-            ckey => '...',
-            csecret => '...',
+            apikey => $ENV{AGAVE_KEY},
+            apisecret => $ENV{AGAVE_SECRET},
 			user => $ENV{IPLANT_USERNAME},
-			token => $ENV{IPLANT_TOKEN},
+			token => $ENV{AGAVE_TOKEN},
 			debug => 1,
 			password => $ENV{IPLANT_PASSWORD},
 		);
@@ -37,7 +37,7 @@ if (0) {
 
 # this will read the configs from the ~/.agave file:
 #	conf file content: 
-#		{"user":"iplant_username", "password":"iplant_password", "ckey":"", "csecret":"", "token":""}
+#		{"user":"iplant_username", "password":"iplant_password", "apikey":"", "apisecret":"", "token":""}
 #		# set either the password or the token
 
 #my $api_instance = Agave::Client->new(debug => 1);
