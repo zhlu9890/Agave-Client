@@ -47,6 +47,7 @@ Perhaps a little code snippet.
 my @config_files = qw(
    ./agave
    ~/.agave 
+   ~/.agave/current
    ~/Library/Preferences/agave
    /etc/agave
 );
@@ -123,7 +124,7 @@ sub _auto_config {
 			$c =~ s/^~/$home_dir/;
 		}
 		
-		if (-e $c) {
+		if (-f $c) {
 			open(CONFIG, $c);
 			my $contents = do { local $/;  <CONFIG> };
 			if (defined($contents)) {

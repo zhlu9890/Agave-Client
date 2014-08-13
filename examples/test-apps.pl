@@ -29,7 +29,7 @@ sub list_dir {
 # see examples/test-io.pl for another way to do auth
 #
 my $api_instance = Agave::Client->new(debug => 0);
-#$api_instance->debug(0);
+#$api_instance->debug(1);
 
 unless ($api_instance->token) {
 	print STDERR "Can't authenticate!" , $/;
@@ -133,8 +133,10 @@ if ($ap_wc) {
     # for all the job options see documentation
     #  at http://agaveapi.co/job-management/
     my %job_arguments = (
-            name => 'job ' . int(rand(1024)),
+            name => sprintf('job-%s-%d', $ap_wc->name, int(rand(1024))),
             archive => 'true',
+            maxRunTime => '00:10:00',
+            archiveSystem => 'data.iplantcollaborative.org',
         );
 
     my ($input) = ($ap_wc->inputs)[0];
@@ -172,8 +174,7 @@ while ($tries++ < 50) {
     #print STDERR Dumper( $j), $/ if $tries == 9;
     my $job_status = $j->status;
     print STDERR 'status: ', $job_status, $/;
-    last if $job_status eq 'ARCHIVING_FINISHED' && $j->{archive};
-    last if $job_status eq 'FINISHED' && !$j->{archive};
+    last if $job_status eq 'FINISHED';
 
     if ($job_status =~ m/FAILED$/) {
         print STDERR  'message: ', $j->{message}, $/;
