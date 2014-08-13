@@ -16,11 +16,11 @@ Agave::Client::Job - The great new Agave::Client::Job!
 
 =head1 VERSION
 
-Version 0.01
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 =head1 SYNOPSIS
@@ -78,7 +78,7 @@ sub submit_job {
 			memory => delete $params{memory} || '',
 		);
 
-    for my $option (qw(notifications archive archivePath memoryPerNode)) {
+    for my $option (qw(notifications archive archivePath archiveSystem memoryPerNode)) {
         $post_content{ $option } = delete $params{ $option } 
             if (defined $params{ $option });
     }
@@ -176,6 +176,55 @@ sub input {
 }
 
 
+=head2 share_job
+
+=cut
+
+sub share_job {
+	my ($self, $job_id, $username, $perm) = @_;
+
+    $perm ||= "read";
+    return unless ($job_id && $username);
+
+    my $path = join("/", "", $job_id, "share", $username);
+
+    return unless $perm =~ /^(?:read|write)$/;
+
+    $self->do_post($path, permission => $perm);
+}
+
+=head2 stop_job
+
+=cut
+
+sub stop_job {
+	my ($self, $job_id) = @_;
+
+    return unless ($job_id);
+
+    my $path = "/$job_id";
+
+    my $rc = $self->do_post($path, "action" => "stop");
+}
+
+
+sub stdout {
+    my ($self, $job_id) = @_;
+
+    return unless ($job_id);
+
+    my $path = '/' . $job_id . '/output/ipc.stdout';
+    $self->do_get($path);
+}
+
+sub stderr {
+    my ($self, $job_id) = @_;
+
+    return unless ($job_id);
+
+    my $path = '/' . $job_id . '/output/ipc.stderr';
+    $self->do_get($path);
+}
 
 =head1 AUTHOR
 
@@ -201,7 +250,7 @@ You can find documentation for this module with the perldoc command.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2011 Cornel Ghiban.
+Copyright 2014 Cornel Ghiban.
 
 =cut
 
