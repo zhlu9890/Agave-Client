@@ -49,14 +49,14 @@ sub new {
 	bless($self, $class);
 
 	if ($self->{user} && $self->{token}) {
-        unless ($self->is_token_valid) {
-            # we should catch this and switch to password authentication
-            # will try to get a new token, if the password was provided
-            delete $self->{token};
-		}
-		else {
-			print STDERR  "Token validated successfully", $/ if $self->debug;
-		}
+		#unless ($self->is_token_valid) {
+		#    # we should catch this and switch to password authentication
+		#    # will try to get a new token, if the password was provided
+		#    delete $self->{token};
+		#}
+		#else {
+		#	print STDERR  "Token validated successfully", $/ if $self->debug;
+		#}
 	}
 
 

@@ -29,7 +29,7 @@ use Data::Dumper;
         my ($self, $client_name) = @_;
         return unless $client_name;
 
-        $self->do_get('/' . $client_name);
+        eval {$self->do_get('/' . $client_name)};
     }
 
     # retrieves all auth clients

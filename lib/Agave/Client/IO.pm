@@ -59,6 +59,8 @@ sub readdir {
 		return;
 	}
 
+	$path = "/$path" unless $path =~ m/^\//;
+
 	my $list = $self->do_get('/listings' . $path);
 	return @$list ? [map {Agave::Client::Object::File->new($_)} @$list] : [];
 }
@@ -169,22 +171,22 @@ sub stream_file {
 
 	# Check for the requested path to be renamed
 	unless (defined($path)) {
-		print STDERR "::IO::stream_file Please specify a path which you want renamed\n";
+		print STDERR "::IO::stream_file Please specify a path which you want streamed\n";
 		return;
 	}
 
 	# TODO - make limit_size = 1024 by default - why?
     my $ep_path = '/media';
 
-    my $buffer = try {
-            $self->do_get($ep_path . $path, %params);}
-        catch {
-	        return $self->_error("IO::stream_file. Error streaming file.", $_)
-                unless ref($_);
+	$path = "/$path" unless $path =~ m/^\//;
 
-            # catch/handle the error upstream
-            $_->rethrow;
-        };
+    my $buffer = try {$self->do_get($ep_path . $path, %params);}
+				catch {
+					return $self->_error("IO::stream_file. Error streaming file.", $_)
+						unless ref($_);
+					# catch/handle the error upstream
+					$_->rethrow;
+				};
 
     return $buffer;
 }

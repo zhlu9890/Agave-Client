@@ -71,11 +71,11 @@ sub submit_job {
 
 	my %post_content = (
 			appId => $application->id,
-			name => delete $params{name} || delete $params{jobName} || 'Job for ' . $application->id,
+			jobName => delete $params{name} || delete $params{jobName} || 'Job for ' . $application->id,
 			maxRunTime => delete $params{maxRunTime} || delete $params{requestedTime} || '01:00:00',
 			nodeCount => delete $params{nodeCount} || delete $params{processors} || 1,
-			processorsPerNode => delete $params{processorsPerNode} || delete $params{processorsPerNode} || 1,
-			memory => delete $params{memory} || '',
+			#processorsPerNode => delete $params{processorsPerNode} || delete $params{processorsPerNode} || 1,
+			#memory => delete $params{memory} || '',
 		);
 
     for my $option (qw(notifications archive archivePath archiveSystem memoryPerNode)) {

@@ -146,10 +146,14 @@ use vars qw($VERSION $AGENT);
                  $mref = $json->decode( $message );
             }
             catch {
+				my $err_msg = 'Invalid response. Expecting JSON.';
+				if ($message =~ /<ams:message>(.+)<\/ams:message>/) {
+					$err_msg = $1;
+				}
                 Agave::Exceptions::HTTPError->throw(
                     code => $res->code,
-                    message => 'Invalid response. Expecting JSON.',
-                    content => $res->content,
+                    message => $err_msg,
+                    content => $message,
                 );
             };
 
@@ -177,9 +181,14 @@ use vars qw($VERSION $AGENT);
         else {
             print STDERR $res->status_line, "\n" if $self->debug;
             print STDERR $req->content, "\n" if $self->debug;
+
+			my $err_msg = 'Invalid response. Expecting JSON.';
+			if ($message =~ /<ams:message>(.+)<\/ams:message>/) {
+				$err_msg = $1;
+			}
             Agave::Exceptions::HTTPError->throw(
                 code => $res->code,
-                message => 'Invalid response. Expecting JSON.',
+                message => $err_msg,
                 content => $res->content,
             );
         }

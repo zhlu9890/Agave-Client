@@ -102,12 +102,17 @@ sub archivePath {
 	$self->{archivePath};
 }
 
+sub archive {
+	my ($self) = @_;
+	$self->{archive};
+}
+
 sub is_finished {
-	$_[0]->status =~ /(?:FINISHED|KILLED|FAILED|STOPPED|ARCHIVING_FINISHED|ARCHIVING_FAILED)/;
+	$_[0]->status =~ /^(?:FINISHED|KILLED|FAILED|STOPPED|ARCHIVING_FAILED)$/;
 }
 
 sub is_successful {
-	$_[0]->status =~ /(ARCHIVING_)?FINISHED/
+	$_[0]->status eq 'FINISHED'
 }
 
 1; # End of Agave::Client::Object::Application

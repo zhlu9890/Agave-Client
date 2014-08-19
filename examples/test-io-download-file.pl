@@ -46,7 +46,11 @@ my $local_file = "/tmp/" . basename($remote_file);
 if (-f $local_file) {
     unlink $local_file or do {die "Can't remove existing file: " . $local_file;}
 }
-$io->stream_file($remote_file, save_to => $local_file);
+eval{$io->stream_file($remote_file, save_to => $local_file);};
+if ($@) {
+    warn "Error: ", $@, "\n", $@->content, "\n";
+    exit(1);
+}
 
 if (-f $local_file) {
     print "Stored remote file to ", $local_file, ", size = ", -s $local_file, " bytes", $/;
