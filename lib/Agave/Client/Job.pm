@@ -133,9 +133,14 @@ sub job_details {
 }
 
 sub job_output_files {
-	my ($self, $job_id) = @_;
+	my ($self, $job_id, $path) = @_;
+	
+	$path ||= '';
+	if ($path ne '' && $path !~ m/^\//) {
+		$path = "/" . $path;
+	}
 
-	$self->do_get('/' . $job_id . '/output/list');
+	$self->do_get('/' . $job_id . '/outputs/listings' . $path);
 }
 
 =head2 jobs
