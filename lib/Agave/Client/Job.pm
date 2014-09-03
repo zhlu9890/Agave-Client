@@ -183,14 +183,14 @@ sub input {
 sub share_job {
 	my ($self, $job_id, $username, $perm) = @_;
 
-    $perm ||= "read";
+    $perm ||= "READ";
     return unless ($job_id && $username);
 
-    my $path = join("/", "", $job_id, "share", $username);
+    my $path = join("/", "", $job_id, "pems", $username);
 
-    return unless $perm =~ /^(?:read|write)$/;
+    return unless $perm =~ /^(?:READ|WRITE|READ_WRITE|ALL|NONE)$/i;
 
-    $self->do_post($path, permission => $perm);
+    $self->do_post($path, permission => uc $perm);
 }
 
 =head2 stop_job
