@@ -390,6 +390,39 @@ use vars qw($VERSION $AGENT);
         if (@_) { $self->{debug} = shift }
         return $self->{debug};
     }
+
+sub logger {
+	my $self = shift;
+	if (@_) { $self->{logger} = shift }
+	return $self->{logger};
+}
+
+sub log {
+	my $self = shift;
+	my %args = @_;
+
+	return unless $self->{logger};
+	return unless keys %args;
+
+	my %params = (
+		user => $self->{user} || 'no_user',
+		end_point => $self->_get_end_point || 'no_ep',
+	);
+	$params{$_} = $args{$_} for (keys %args);
+	if (exists $params{content} && defined $params{content}) {
+		$params{content} = substr($params{content}, 0, 8_000);
+	}
+
+	#print STDERR Dumper( \%params ), $/;
+
+	# we don't care about if this suceeds, for now..
+	eval {
+		$self->{logger}->can('log') 
+			? $self->{logger}->log(\%params)
+			: $self->{logger}->send(\%params);
+	};
+}
+
 }
 
 1;

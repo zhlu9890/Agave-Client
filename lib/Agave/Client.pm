@@ -77,6 +77,7 @@ sub new {
             http_timeout => defined $args{http_timeout} ? delete $args{http_timeout} : undef,
             auth => undef,
             debug => defined $args{debug} ? delete $args{debug} : undef,
+            logger => defined $args{logger} ? delete $args{logger} : undef,
         };
 
     my $config_file = defined $args{config_file} ? delete $args{config_file} : undef;
@@ -192,6 +193,14 @@ sub debug {
 		$self->{auth} && $self->{auth}->debug($d);
 	}
 	$self->SUPER::debug($d);
+}
+
+sub logger {
+	my ($self, $l) = @_;
+	if (defined $l) {
+		$self->{logger} = $l;
+	}
+	$self->{logger};
 }
 
 =head1 AUTHOR
