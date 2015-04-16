@@ -44,7 +44,7 @@ sub new {
 	my ($proto, $args) = @_;
 	my $class = ref($proto) || $proto;
 	
-	my $self  = { map {$_ => $args->{$_}} grep {/^(?:user|token|password|hostname|lifetime|apisecret|apikey|refresh_token|http_timeout|client|debug)$/} keys %$args};
+	my $self  = { map {$_ => $args->{$_}} grep {/^(?:user|token|password|hostname|apisecret|apikey|refresh_token|http_timeout|client|debug)$/} keys %$args};
 	
 	bless($self, $class);
 
@@ -78,14 +78,24 @@ sub new {
 	return $self;
 }
 
+# issue new token
+# curl -sk -X POST \
+#	-d "grant_type=password&username=nryan@mlb.com&password=<password>&scope=PRODUCTION" \
+#	-u "$CLIENT_KEY:$CLIENT_SECRET"  \
+#	-H "Content-Type: application/x-www-form-urlencoded" \
+#	https://agave.iplantc.org/token
+
+# renew token
+#curl -sk -X POST \
+#	-d "grant_type=refresh_token&scope=PRODUCTION&refresh_token=b546d976911cd4a0a958e6f762ebcadf" \
+#	-u "$CLIENT_KEY:$CLIENT_SECRET" \
+#	-H "Content-Type: application/x-www-form-urlencoded" \
+#	https://$API_BASE_URL/token
+
 sub _auth_post_token {
 	
 	# Retrieve a token in user mode
-	my ($self, $renew) = @_;
-
-    #if ($renew && $self->{password}) {
-    #	print STDERR  "Revalidating token...", $/ if $self->debug;
-    #}
+	my ($self, $refresh_token) = @_;
 
 	my $ua = $self->_setup_user_agent;
 	$ua->default_header( Authorization => 'Basic ' . _encode_credentials($self->{apikey}, $self->{apisecret}) );
@@ -100,15 +110,14 @@ sub _auth_post_token {
             password => $self->password,
         };
 
-    #if ($renew) {
-    #	$url .= "renew";
-    #	push @$content, token => $self->token;
-    #}
+    if ($refresh_token) {
+		$content = {
+            scope => 'PRODUCTION',
+            grant_type => 'refresh_token',
+            refresh_token => $refresh_token,
+        };
+    }
 
-	if ($self->{lifetime}) {
-		$content->{expires_in} = $self->{lifetime};
-	}
-	
 	print STDERR  '..::Auth::_auth_post_token: ', $url, $/ if $self->debug;
 
 	my $res = $ua->post( $url, $content);
@@ -129,7 +138,9 @@ sub _auth_post_token {
 		if ($mref) {
 			if (defined($mref->{access_token}) && defined $mref->{expires_in} ) {
 				$self->{access_token} = $mref->{access_token};
-				$self->{token_expires} = $mref->{expires_in};
+				$self->{refresh_token} = $mref->{refresh_token};
+				$self->{token_expires_in} = $mref->{expires_in};
+				$self->{token_expires_at} = time() + $mref->{expires_in};
 				$self->{token_type} = $mref->{token_type};
 				return $mref->{'access_token'};
 			}
@@ -147,6 +158,13 @@ sub _auth_post_token {
         );
 	}
 
+}
+
+sub refresh {
+	my ($self, $refresh_token) = @_;
+
+	#return unless $self->{refresh_token} && $refresh_token;
+	$self->_auth_post_token($self->{refresh_token} || $refresh_token);
 }
 
 =head2 is_token_valid - not working in v2
@@ -213,11 +231,15 @@ sub is_token_valid {
 
 =cut
 
-sub token_expiration {
+sub token_expiration_in {
 	my ($self) = shift;
-	return $self->{token_expires};
+	return $self->{token_expires_in};
 }
 
+sub token_expiration_at {
+	my ($self) = shift;
+	return $self->{token_expires_at};
+}
 
 sub _encode_credentials {
 	

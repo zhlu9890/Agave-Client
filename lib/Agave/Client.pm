@@ -73,7 +73,7 @@ sub new {
             password => $args{password} || '',
             token => $args{token} || '',
             credential_class => $args{credential_class} || 'self',
-            lifetime => defined $args{lifetime} ? delete $args{lifetime} : undef,
+			#lifetime => defined $args{lifetime} ? delete $args{lifetime} : undef,
             http_timeout => defined $args{http_timeout} ? delete $args{http_timeout} : undef,
             auth => undef,
             debug => defined $args{debug} ? delete $args{debug} : undef,
@@ -179,10 +179,10 @@ sub job {
 	return Agave::Client::Job->new($self);
 }
 
-sub token_expiration {
+sub token_expiration_in {
 	my $self = shift;
 	if ($self->{auth}) {
-		return $self->{auth}->token_expiration;
+		return $self->{auth}->token_expiration_in;
 	}
 	return 0;
 }
