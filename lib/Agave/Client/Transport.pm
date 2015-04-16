@@ -266,7 +266,9 @@ use vars qw($VERSION $AGENT);
 
         my $ua = $self->_setup_user_agent;
         my $req = HTTP::Request->new(DELETE => "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path);
-        my $res = $ua->request($req, \%params);
+        my $res = scalar(%params) 
+				? $ua->request($req, %params) 
+				: $ua->request($req);
         
         print STDERR "\nDELETE => $TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path, "\n" if $self->debug;
         
