@@ -111,6 +111,8 @@ sub remove {
 		return;
 	}
 
+	$path = "/$path" unless $path =~ m/^\//;
+
 	return $self->do_delete($ep_path . $path);
 }
 
@@ -137,9 +139,6 @@ sub rename {
 
 	my $st = $self->do_put($ep_path . $path, action => 'rename', path => uri_escape($new_name));
 	print STDERR 'rename status: ', Dumper( $st), $/ if $self->debug;
-	#if ($st == -1) {
-	#	return undef;
-	#}
 	$st;
 }
 
@@ -149,9 +148,22 @@ sub rename {
 
 
 sub move {
-	my ($self, $src, $dest) = @_;
+	my ($self, $path, $dest) = @_;
 
-	print STDERR  "::IO::move: Not implemented", $/;
+	# note: $dest must reprezent full path, not a directory
+
+    my $ep_path = '/media';
+	# Check for a request path
+	unless (defined($path)) {
+		print STDERR "::IO::remove - Please specify the path you want removed\n";
+		return;
+	}
+
+	$path = "/$path" unless $path =~ m/^\//;
+
+ 	my $st = $self->do_put($ep_path . $path, action => 'move', path => $dest);
+ 	print STDERR 'move status: ', Dumper( $st), $/ if $self->debug;
+	return $st;
 }
 
 =head2 stream_file
