@@ -18,14 +18,14 @@ Agave::Client::IO - The great new Agave::Client::IO!
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 {
-my @permissions = qw/read write execute/;
+my @permissions = qw/READ WRITE EXECUTE READ_WRITE READ_EXECUTE WRITE_EXECUTE ALL NONE/;
 
 =head1 SYNOPSIS
 
@@ -277,23 +277,24 @@ sub upload {
 =cut
 
 sub share {
-	my ($self, $path, $ipc_user, %perms) = @_;
+	my ($self, $path, $ipc_user, $perm) = @_;
 
+	$perm ||= '';
 	my %p = ();
-	for (@permissions) {
-		if (defined $perms{$_}) {
-			$p{$_} = 'false';
-			if ($perms{$_}) {
-				$p{$_} = 'true';
-			}
+	for my $okp (@permissions) {
+		if ($okp eq $perm) {
+			$p{permission} = $okp;
+			last;
 		}
 	}
+
 	print STDERR  'permissions to set: ', join (', ', keys %p), $/ if $self->debug;
 
 	return $self->_error("IO::share: nothing to share. ") unless ($path && $ipc_user && %p);
 
-	$p{username} = $ipc_user;
+	$path = "/$path" unless $path =~ m/^\//;
 	$path = '/pems' . $path;
+	$p{username} = $ipc_user;
 	
 	my $resp = try {
             $self->do_post($path, %p);
@@ -302,7 +303,7 @@ sub share {
 	        return $self->_error("IO::share: Unable to share file.", $_);
         };
 	# due to how do_post works:
-	return ref $resp && !%$resp ? {'status' => 'success'} : $resp;
+	return ref($resp) ? $resp : {'status' => 'success'};
 }
 
 =head2 get_perms
@@ -339,7 +340,7 @@ sub get_perms {
                 $_->rethrow;
             }
         };
-    if (ref $resp && %$resp) {
+    if (ref $resp && @$resp) {
         return $resp;
     }
 }
