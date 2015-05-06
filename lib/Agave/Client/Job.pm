@@ -107,7 +107,10 @@ sub submit_job {
             $self->do_post('/', %post_content);
         }
         catch {
-	        return $self->_error("JobEP: Unable to submit job.");
+            if (ref($_) && $_->isa('Agave::Exceptions::HTTPError')) {
+                return {status => 'error', message => $_->code . ' ' . $_->message}
+            }
+	        return $self->_error("JobEP: Unable to submit job." . (ref $_ ? $_->message : ''));
         };
 	if (ref $resp) {
 		if ($resp->{id}) {
