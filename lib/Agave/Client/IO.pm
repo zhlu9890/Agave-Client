@@ -236,15 +236,40 @@ sub upload {
 	}
 	$content->{fileToUpload} = [ $params{'fileToUpload'} ];
 	
+	$HTTP::Request::Common::DYNAMIC_FILE_UPLOAD = 1;
 
 	my $ua = $self->_setup_user_agent;
 	print STDERR "\nhttps://" . $self->hostname . "/" . $END_POINT . $path, "\n" if $self->debug;
- 	my $res = $ua->request(
-			POST "https://" . $self->hostname . "/" . $END_POINT . $path,
-			'Content_Type' => 'form-data',
-			Content	=> $content,
-		);
-	
+
+	my $req = POST "https://" . $self->hostname . "/" . $END_POINT . $path,
+			    Content_Type => 'form-data',
+			    Content	=> $content;
+
+	#---
+	my $callback = $req->content;
+	#my $total;
+	#my $size = $req->header('content-length');
+	$req->content(sub {
+		my $chunk = $callback->();
+
+		#if ($chunk) {
+		#    my $length = length $chunk;
+		#    $total += $length;
+		#    printf "%+5d = %5.1f%%\n", $length, $total / $size * 100;
+		#}
+		#else {
+		#    print "Completed\n";
+		#}
+		$chunk;
+	});
+
+	my $res = $ua->request($req);
+
+	$HTTP::Request::Common::DYNAMIC_FILE_UPLOAD = 0;
+	# some code taken from here: 
+	# http://stackoverflow.com/questions/24631258/progress-indicator-for-perl-lwp-post-upload
+	#---
+
 	# Parse response
 	my $message;
 	my $mref;
