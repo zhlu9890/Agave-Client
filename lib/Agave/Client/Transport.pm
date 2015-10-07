@@ -37,9 +37,6 @@ use vars qw($VERSION $AGENT);
     #my $AUTH_ROOT = "v2/auth";
     my $AUTH_END = "token";
 
-    my $DATA_ROOT = "data-v1";
-    my $DATA_END = "$DATA_ROOT/data";
-
     my $APPS_END = "apps/v2";
     my $JOBS_END = "jobs/v2";
     my $CLIENTS_END = "clients/v2";
@@ -49,10 +46,10 @@ use vars qw($VERSION $AGENT);
     my %end_point = (
             auth => $AUTH_END,
             io => $IO_END,
-            data => $DATA_END,
             apps => $APPS_END,
             job  => $JOBS_END,
             client => $CLIENTS_END,
+            metadata => 'meta/v2',
         );
 
     sub _get_end_point {
@@ -322,10 +319,20 @@ use vars qw($VERSION $AGENT);
             if $self->debug;
 
         my $ua = $self->_setup_user_agent;
-        my $res = $ua->post(
+        my $res;
+        if (exists $params{_content_type} && exists $params{_data} ) {
+            my $req = POST "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path,
+                    'Content-type' => $params{_content_type},
+                    'Content' => $params{_data};
+            #print STDERR Dumper( $req ), $/;
+            $res = $ua->request($req);
+        }
+        else {
+            $res = $ua->post(
                     "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path,
                     \%params
                 );
+        }
         
         # Parse response
         my $message;
