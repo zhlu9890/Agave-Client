@@ -77,7 +77,7 @@ Perhaps a little code snippet.
 
         $self->do_post("/data/$id",
                 _content_type => 'application/json; charset=utf-8', 
-                _data => $js
+                _body => $js
             );
     }
 
@@ -97,7 +97,7 @@ Perhaps a little code snippet.
 
         $self->do_post('/data', 
                 _content_type => 'application/json; charset=utf-8', 
-                _data => $js
+                _body => $js
             );
     }
 

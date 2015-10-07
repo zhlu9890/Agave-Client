@@ -320,10 +320,10 @@ use vars qw($VERSION $AGENT);
 
         my $ua = $self->_setup_user_agent;
         my $res;
-        if (exists $params{_content_type} && exists $params{_data} ) {
+        if (exists $params{_content_type} && exists $params{_body} ) {
             my $req = POST "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path,
                     'Content-type' => $params{_content_type},
-                    'Content' => $params{_data};
+                    'Content' => $params{_body};
             #print STDERR Dumper( $req ), $/;
             $res = $ua->request($req);
         }
