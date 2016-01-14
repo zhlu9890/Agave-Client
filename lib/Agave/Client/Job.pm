@@ -6,6 +6,7 @@ use strict;
 use base qw/Agave::Client::Base/;
 
 use Agave::Client::Object::Job ();
+use Agave::Client::Object::OutputFile ();
 use Try::Tiny;
 
 use Data::Dumper;
@@ -20,7 +21,7 @@ Version 0.03
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 =head1 SYNOPSIS
@@ -73,7 +74,7 @@ sub submit_job {
 			appId => $application->id,
 			jobName => delete $params{name} || delete $params{jobName} || 'Job for ' . $application->id,
 			maxRunTime => delete $params{maxRunTime} || delete $params{requestedTime} || '01:00:00',
-			nodeCount => delete $params{nodeCount} || delete $params{processors} || 1,
+			#nodeCount => delete $params{nodeCount} || delete $params{processors} || 1,
 			#processorsPerNode => delete $params{processorsPerNode} || delete $params{processorsPerNode} || 1,
 			#memory => delete $params{memory} || '',
 		);
@@ -127,6 +128,7 @@ sub submit_job {
 sub job_details {
 	my ($self, $job_id) = @_;
 
+	return unless $job_id;
 	my $data = $self->do_get('/' . $job_id);
 	if ('HASH' eq ref $data) {
 		return Agave::Client::Object::Job->new($data);
@@ -139,12 +141,44 @@ sub job_output_files {
 	my ($self, $job_id, $path) = @_;
 	
 	$path ||= '';
+	if (ref($path) && $path->isa('Agave::Client::Object::File')) {
+		$path = $path->path;
+	}
 	if ($path ne '' && $path !~ m/^\//) {
 		$path = "/" . $path;
 	}
 
-	$self->do_get('/' . $job_id . '/outputs/listings' . $path);
+	my $list = $self->do_get('/' . $job_id . '/outputs/listings' . $path);
+	return $list && @$list 
+		? [map {Agave::Client::Object::OutputFile->new($_)} @$list] 
+		: [];
 }
+
+# similar to the one in ::IO
+sub stream_file {
+	my ($self, $ofile, %params) = @_;
+
+	# Check for the requested path to be renamed
+	unless (defined($ofile) && ref($ofile)) {
+		print STDERR "::Job::stream_file Please specify a output file which you want streamed\n";
+		return;
+	}
+
+	my $ep_path = sprintf("/%s/outputs/media", $ofile->job);
+
+	#$path = "/$path" unless $path =~ m/^\//;
+
+	my $buffer = try {$self->do_get($ep_path . $ofile->path, %params);}
+				catch {
+					return $self->_error("JOB::stream_file. Error streaming file.", $_)
+						unless ref($_);
+					# catch/handle the error upstream
+					$_->rethrow;
+				};
+
+    return $buffer;
+}
+
 
 =head2 jobs
 
