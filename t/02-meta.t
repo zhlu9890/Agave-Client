@@ -2,7 +2,7 @@
 
 use Test::More;
 
-my $TNUM = 16;
+my $TNUM = 27;
 plan tests => $TNUM;
 
 use FindBin;
