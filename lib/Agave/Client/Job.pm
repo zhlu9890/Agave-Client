@@ -121,6 +121,23 @@ sub submit_job {
 	}
 }
 
+=head2 resubmit_job
+
+=cut
+
+sub resubmit_job {
+	my ($self, $job_id) = @_;
+
+	return unless $job_id;
+
+    my $data = $self->do_post('/' . $job_id , 'action' => 'resubmit');
+	if ('HASH' eq ref $data) {
+		return Agave::Client::Object::Job->new($data);
+	}
+
+	return $data;
+}
+
 =head2 job_details
 
 =cut
