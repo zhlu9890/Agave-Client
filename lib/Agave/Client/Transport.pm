@@ -79,6 +79,7 @@ use vars qw($VERSION $AGENT);
                 );
         }
         print STDERR  "::do_get: path: ", $path, $/ if $self->debug;
+		$self->log( type => 'request', method => 'GET', path => $path);
 
         my $ua = $self->_setup_user_agent;
         my ($req, $res);
@@ -110,6 +111,9 @@ use vars qw($VERSION $AGENT);
                         );
             }
 
+			$self->log( type => 'response', method => 'GET',
+				path => $path, code => $res->code,);
+
             if ($res->is_success) {
                 return $data;
             }
@@ -125,6 +129,9 @@ use vars qw($VERSION $AGENT);
         else {
             $req = HTTP::Request->new(GET => "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path);
             $res = $ua->request($req);
+
+			$self->log( type => 'response', method => 'GET', path => $path,
+				code => $res->code, content => $res->content);
         }
         
         print STDERR "\n$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path, "\n" if $self->debug;
@@ -197,7 +204,7 @@ use vars qw($VERSION $AGENT);
 
         my $END_POINT = $self->_get_end_point;
         unless ($END_POINT) {
-            Agave::Exceptions::InvalidEndPoint->throw("do_get: Invalid endpoint.");
+            Agave::Exceptions::InvalidEndPoint->throw("do_put: Invalid endpoint.");
         }
         
         # Check for a request path
@@ -212,6 +219,8 @@ use vars qw($VERSION $AGENT);
         while (my ($k, $v) = each %params) {
             $content .= "$k=$v&";
         }
+	    my $log_path = $path . '?' . $content;
+		$self->log( type => 'request', method => 'PUT', path => $log_path);
 
         my $ua = $self->_setup_user_agent;
         #print STDERR Dumper( $ua), $/;
@@ -219,12 +228,14 @@ use vars qw($VERSION $AGENT);
         my $req = HTTP::Request->new(PUT => "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path);
         $req->content($content) if $content;
         my $res = $ua->request($req);
+
+		$self->log( type => 'response', method => 'PUT', path => $log_path,
+			code => $res->code, content => $res->content);
         
         # Parse response
         my $message;
         my $mref;
         
-        #print STDERR Dumper( $res ), $/;
         if ($res->is_success) {
             $message = $res->content;
             if ($self->debug) {
@@ -250,7 +261,7 @@ use vars qw($VERSION $AGENT);
 
         my $END_POINT = $self->_get_end_point;
         unless ($END_POINT) {
-            Agave::Exceptions::InvalidEndPoint->throw("do_get: Invalid endpoint.");
+            Agave::Exceptions::InvalidEndPoint->throw("do_delete: Invalid endpoint.");
         }
         
         # Check for a request path
@@ -261,19 +272,23 @@ use vars qw($VERSION $AGENT);
         }
         print STDERR  "DELETE Path: ", $path, $/ if $self->debug;
 
+		$self->log( type => 'request', method => 'DELETE', path => $path);
+
         my $ua = $self->_setup_user_agent;
         my $req = HTTP::Request->new(DELETE => "$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path);
         my $res = scalar(%params) 
 				? $ua->request($req, %params) 
 				: $ua->request($req);
-        
+
+		$self->log( type => 'response', method => 'DELETE', path => $path,
+			code => $res->code, content => $res->content);
+
         print STDERR "\nDELETE => $TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path, "\n" if $self->debug;
         
         # Parse response
         my $message;
         my $mref;
         
-        $DB::single = 1;
         if ($res->is_success) {
             $message = $res->content;
             print STDERR $message, "\n" if $self->debug;
@@ -314,6 +329,7 @@ use vars qw($VERSION $AGENT);
 
         $path =~ s'/$'';
 
+		$self->log( type => 'request', method => 'POST', path => $path, params => \%params);
         print STDERR '::do_post: ', Dumper( \%params), $/ if $self->debug;
         print STDERR "\n$TRANSPORT://" . $self->hostname . "/" . $END_POINT . $path, "\n" 
             if $self->debug;
@@ -333,6 +349,9 @@ use vars qw($VERSION $AGENT);
                     \%params
                 );
         }
+		$self->log( type => 'response', method => 'POST', path => $path,
+			code => $res->code, content => $res->content);
+
         
         # Parse response
         my $message;
@@ -419,7 +438,7 @@ sub log {
 	);
 	$params{$_} = $args{$_} for (keys %args);
 	if (exists $params{content} && defined $params{content}) {
-		$params{content} = substr($params{content}, 0, 8_000);
+		$params{content} = substr($params{content}, 0, 8192);
 	}
 
 	#print STDERR Dumper( \%params ), $/;
