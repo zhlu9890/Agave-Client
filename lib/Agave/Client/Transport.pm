@@ -166,7 +166,7 @@ use vars qw($VERSION $AGENT);
             if ($mref && $fault) {
                 Agave::Exceptions::HTTPError->throw(
                     code => $fault->{code},
-                    message => ($fault->{type} . ' ' . $fault->{message}) || 'do_get: error',
+                    message => ($fault->{type} || '') . ' ' . ($fault->{message} || '' ) || 'do_get: error',
                     content => $message,
                 );              
             }
@@ -319,6 +319,12 @@ use vars qw($VERSION $AGENT);
         unless ($END_POINT) {
             Agave::Exceptions::InvalidRequest->throw("Invalid endpoint $END_POINT.");
         }
+
+		if (%params && $params{_sub_end_point}) {
+			$END_POINT .= $params{_sub_end_point} =~ m|^/| 
+				? $params{_sub_end_point}
+				: '/' . $params{_sub_end_point};
+		}
         
         # Check for a request path
         unless (defined($path)) {

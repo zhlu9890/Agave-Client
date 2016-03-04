@@ -370,6 +370,52 @@ sub get_perms {
     }
 }
 
+
+=head 
+
+=cut
+
+sub import {
+	my ($self, $path, $params) = @_;
+
+	# curl -sk -H "Authorization: Bearer 123abc" \
+	# -X POST \
+	# --data-urlencode "urlToIngest=agave://dnasubway-cfncluster.us-west-1.compute.amazonaws.com/scratch/ghiban/job-1202088293959003675-ee4acae9fffff7a7-0001-007-fx2291/fastx_out/WT_rep2-fx2291_fastqc.html" \
+	# --data-urlencode "notifications=ghiban@cshl.edu" \
+	# --data-urlencode "fileType=" \
+	# --data-urlencode "fileName=" \
+	# https://agave.iplantc.org/files/v2/media/ghiban/tmp/?pretty=true
+$DB::single = 2;
+
+	# Check for a request path
+	unless (defined($path)) {
+		Agave::Exceptions::InvalidArguments->throw(
+			"Please specify a RESTful path for A::C::IO::import()"
+		);
+	}
+
+	$path = "/$path" unless $path =~ m/^\//;
+
+	# to specify the systemid set the _sub_end_point to 'media/system/${systemid}'
+	# eg: media/system/data.iplantcollaborative.org
+	my %p = (
+			_sub_end_point => 'media',	# files/v2/media
+			urlToIngest => $$params{urlToIngest},
+			fileType => $$params{fileType} || '',
+			fileName => $$params{fileName} || '',
+			notifications => $$params{notifications} || ''
+		);
+	
+	my $resp = try {
+			$self->do_post($path, %p);
+		}
+		catch {
+			return $self->_error("IO::import: Unable to import file.", $_);
+		};
+	# due to how do_post works:
+	return ref($resp) ? $resp : {'status' => 'success'};
+}
+
 =head1 AUTHOR
 
 Cornel Ghiban, C<< <cghiban at gmail.com> >>
@@ -390,25 +436,7 @@ You can find documentation for this module with the perldoc command.
     perldoc Agave::Client::IO
 
 
-You can also look for information at:
-
 =over 4
-
-=item * RT: CPAN's request tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=iPlant-FoundationalAPI>
-
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/iPlant-FoundationalAPI>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/iPlant-FoundationalAPI>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/iPlant-FoundationalAPI/>
 
 =back
 
@@ -418,7 +446,7 @@ L<http://search.cpan.org/dist/iPlant-FoundationalAPI/>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2011 Cornel Ghiban.
+Copyright 2016 Cornel Ghiban.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
