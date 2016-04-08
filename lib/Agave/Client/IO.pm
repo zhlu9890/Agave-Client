@@ -375,7 +375,7 @@ sub get_perms {
 
 =cut
 
-sub import {
+sub import_file {
 	my ($self, $path, $params) = @_;
 
 	# curl -sk -H "Authorization: Bearer 123abc" \
