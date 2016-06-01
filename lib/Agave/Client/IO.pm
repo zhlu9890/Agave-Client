@@ -302,7 +302,7 @@ sub upload {
 =cut
 
 sub share {
-	my ($self, $path, $ipc_user, $perm) = @_;
+	my ($self, $path, $ipc_user, $perm, $recursive) = @_;
 
 	$perm ||= '';
 	my %p = ();
@@ -320,12 +320,19 @@ sub share {
 	$path = "/$path" unless $path =~ m/^\//;
 	$path = '/pems' . $path;
 	$p{username} = $ipc_user;
+
+	unless ($recursive) {
+		$p{recursive} = 'false';
+	}
+	else {
+		$p{recursive} = 'true';
+	}
 	
 	my $resp = try {
             $self->do_post($path, %p);
         }
         catch {
-	        return $self->_error("IO::share: Unable to share file.", $_);
+	        return $self->_error( ref $_ ? $_->message : "IO::share: Unable to share file.", $_);
         };
 	# due to how do_post works:
 	return ref($resp) ? $resp : {'status' => 'success'};
