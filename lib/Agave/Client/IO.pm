@@ -357,6 +357,7 @@ sub share {
 sub get_perms {
     my ($self, $path) = @_;
 
+    $path = "/$path" unless $path =~ m/^\//;
     $path = '/pems' . $path;
 
     my $resp = try {
@@ -372,7 +373,7 @@ sub get_perms {
                 $_->rethrow;
             }
         };
-    if (ref $resp && @$resp) {
+    if (ref $resp && ref $resp eq 'ARRAY' && @$resp) {
         return $resp;
     }
 }
