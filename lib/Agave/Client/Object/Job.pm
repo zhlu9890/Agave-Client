@@ -7,7 +7,7 @@ Agave::Client::Object::Job - The great new Agave::Client::Object::Job!
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
@@ -54,6 +54,12 @@ sub name {
 	return $self->{name};
 }
 
+
+sub owner {
+	my ($self) = @_;
+	return $self->{owner};
+}
+
 sub id {
 	my ($self) = @_;
 	return $self->{id};
@@ -88,7 +94,7 @@ sub shortDescription {
 sub parameters {
 	my ($self) = @_;
 	my $p = $self->{parameters};
-	wantarray ? @$p : $p;
+	wantarray ? %$p : $p;
 }
 
 
@@ -105,6 +111,24 @@ sub archivePath {
 sub archive {
 	my ($self) = @_;
 	$self->{archive};
+}
+
+sub fullOutputPath {
+	my ($self) = @_;
+	return if $self->{archive};
+	
+	sprintf("agave://%s/%s", $self->executionSystem, $self->outputPath);
+}
+
+sub outputPath {
+	my ($self) = @_;
+	!$self->{archive} ? $self->{outputPath} : undef;
+}
+
+sub executionSystem {
+	my ($self) = @_;
+
+	$self->{executionSystem};
 }
 
 sub is_finished {
