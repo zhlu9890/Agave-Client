@@ -3,7 +3,6 @@ package Agave::Client::Metadata;
 use warnings;
 use strict;
 use Carp;
-use HTTP::Request::Common qw(POST);
 use URI::Escape;
 use Try::Tiny;
 use Data::Dumper;
@@ -34,9 +33,38 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use Agave::Client::IO;
-    my $foo = Agave::Client::IO->new();
-    my $io = $foo->io;
+    use Agave::Client;
+    my $api = Agave::Client->new( config_file => $conf_file );
+    my $meta = $api->meta;
+
+    # list
+    $meta->list;
+    $meta->list($uuid);
+
+    # todo
+    # $meta->search();
+
+    # create a metadata object
+    my $mt_desc = {
+        name => 'my-own-test-' . rand(),
+        title => 'this is a test',
+        value => { ana => 'are mere' },
+    };
+    my $mobj = $meta->create($mt_desc);
+
+    # get permissions
+    my $perms = $meta->permissions($uuid);
+    my $perms = $meta->permissions($mobj);
+
+    # set permissions
+    my $perms = $meta->permissions($mobj, $username, 'READ');
+
+    # delete permissions
+    my $perms = $meta->delete_permissions($mobj, $username);
+
+    # delete metadata object
+    my $perms = $meta->delete($mobj);
+
     ...
 
 =head1 FUNCTIONS
