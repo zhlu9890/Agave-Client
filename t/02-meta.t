@@ -57,6 +57,7 @@ SKIP: {
         name => 'my-own-test-' . rand(),
         title => 'this is a test',
         value => { ana => 'are mere' },
+        #schemaId => '3155190661592781286-242ac1111-0001-013',
     };
     my $new_mt = $meta->create($mt_desc);
     #sleep(2);
@@ -66,16 +67,16 @@ SKIP: {
     is_deeply($new_mt->{value}, $mt_desc->{value}, "Value matches");
 
     #print STDERR Dumper( $new_mt), $/;
-    $new_mt->{value} = 'ana are mere';
+    $new_mt->{value} = {ana => 'nu are mere'};
     
     my $mt_updated = $meta->update($new_mt, $new_mt->{uuid});
-    #print STDERR Dumper( $mt_updated), $/;
     ok($mt_updated, 'Metadata updated successfully');
     ok(ref($mt_updated), 'Metadata updated successfully');
-    ok($mt_updated->{uuid} ne '', 'Updated metadata has a UUID');
+    ok($mt_updated->{uuid}, 'Updated metadata has a UUID');
     is($mt_updated->{uuid}, $new_mt->{uuid}, 'Updated metadata has the same UUID');
     is($mt_updated->{name}, $new_mt->{name}, 'Updated metadata has the same name');
-    isnt($mt_updated->{value}, $mt_desc->{value}, 'Updated metadata changed its value');
+
+    isnt($mt_updated->{value}->{ana}, $mt_desc->{value}->{ana}, 'Updated metadata changed its value');
     is_deeply($mt_updated->{value}, $new_mt->{value}, 'Updated metadata has the right value');
 
     # now let's get the permissions

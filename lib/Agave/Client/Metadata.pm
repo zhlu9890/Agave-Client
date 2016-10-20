@@ -3,6 +3,9 @@ package Agave::Client::Metadata;
 use strict;
 use base qw/Agave::Client::MetadataBase/;
 
+use URI::Encode qw/uri_encode/;
+use JSON ();
+
 =head1 NAME
 
 Agave::Client::MetadataBase
@@ -73,7 +76,26 @@ our $VERSION = '0.10';
 
 =head2 delete_permissions
 
+=head2 query
+
 =cut
+
+    sub query {
+	    my ($self, $filter) = @_;
+
+        return [] unless ($filter);
+
+        if (ref $filter) {
+            $filter = JSON->new->utf8->encode($filter);
+        }
+        
+        my $uri = URI::Encode->new({encode_reserved => 1});
+        my $path = $self->_path . '?q=' . $uri->encode($filter);
+
+        print STDERR  '** Q = ', $path , $/;
+	    return eval {$self->do_get($path);};
+    }
+
 
 }
 
