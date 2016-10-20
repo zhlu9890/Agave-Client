@@ -22,6 +22,7 @@ use Agave::Client::Apps ();
 use Agave::Client::Auth ();
 use Agave::Client::Job ();
 use Agave::Client::Metadata ();
+use Agave::Client::MetadataSchema ();
 use Agave::Client::PostIt ();
 
 # Needed to emit the curl-compatible form when DEBUG is enabled
@@ -185,6 +186,11 @@ sub job {
 sub meta {
 	my $self = shift;
 	return Agave::Client::Metadata->new($self);
+}
+
+sub schema {
+	my $self = shift;
+	return Agave::Client::MetadataSchema->new($self);
 }
 
 sub postit {

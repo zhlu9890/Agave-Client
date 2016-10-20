@@ -37,6 +37,7 @@ use vars qw($VERSION $AGENT);
             job  => 'jobs/v2',
             client => "clients/v2",
             metadata => 'meta/v2',
+            metadataschema => 'meta/v2',
             postit => 'postits/v2',
         );
 
