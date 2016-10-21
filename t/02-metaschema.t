@@ -128,22 +128,43 @@ SKIP: {
     # see if you can associate any Ids to it
     # then query for any metadata objects based on these Metadata object
     my $mt_desc = {
-        name => 'rice' . rand(),
-        value => { name => 'rice', species => 'Oryza sativa' },
+        name => 'athaliana-' . rand(),
+        value => { name => 'mouse-ear cress', species => 'Arabidopsis thaliana' },
         schemaId => $new_ms->{uuid},
-        #associationIds => '',
+        associationIds => [],
     };
+
+    # get a file and associate it to this metadata object
+    my $files = $api->io->ls('shared/iplant_DNA_subway/genomes/arabidopsis_thaliana/genome.fas');
+    my $genome = $files && @$files ? $files->[0] : undef;
+
+    if ($genome && $genome->uuid) {
+        $mt_desc->{associationIds} = [ $genome->uuid ]
+    }
 
     my $meta = $api->meta;
     my $mtd = $meta->create($mt_desc);
     ok($mtd, 'New metadata created');
     is($mtd->{schemaId}, $new_ms->{uuid}, 'Metadata name ok');
 
-    #$api->debug(1);
-    #$mtd = $meta->query({ associationIds => '7366700481179151899-e0bd34dffff8de6-0001-002'});
-    $meta->delete($mtd);
+    if ($genome && $genome->uuid) {
+        my $result = $meta->query({ associationIds => $genome->uuid});
+        #diag(Dumper($result));
+        ok($result && ref $result, 'Metadata query worked');
 
-    my $st = $metas->delete($new_ms);
+        my ($amtd) = grep {$_->{uuid} eq $mtd->{uuid}} @$result if $result;
+        ##diag(Dumper($amtd));
+        ok($amtd, 'Got a metadata object');
+
+        my $assocIds = $amtd->{associationIds};
+        ok($assocIds && ref $assocIds && @$assocIds, 'Metadata has associationIds');
+        is_deeply($mtd->{associationIds}, $amtd->{associationIds}, 'Got the same associationIds');
+    }
+
+    my $st = $meta->delete($mtd);
+    is($st, !undef, 'Metadata succeesfully deleted');
+
+    $st = $metas->delete($new_ms);
     is($st, !undef, 'Schema succeesfully deleted');
 
     done_testing();
