@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 
+
+use strict;
 use Test::More;
 
 my $TNUM = 27;
@@ -91,39 +93,36 @@ SKIP: {
     #diag(Dumper($ms_updated));
 
 
-if (0) {
     # now let's get the permissions
-    my $perms = $meta->permissions($new_mt);
-    #print STDERR Dumper( $perms), $/;
-    my ($owner_perm) = grep { $new_mt->{owner} eq $_->{username} } @$perms; 
+    my $perms = $metas->permissions($new_ms);
+    #diag(Dumper( $perms));
+    my ($owner_perm) = grep { $new_ms->{owner} eq $_->{username} } @$perms; 
     ok ($owner_perm, 'Owner has permissions');
     is ($owner_perm->{permission}->{write}, 1, "Owner has write permissions");
     is ($owner_perm->{permission}->{read},  1, "Owner has read permissions");
 
     my $SHARE_WITH_USER = 'dnalcadmin';
 
-    my $perm = $meta->permissions($new_mt, $SHARE_WITH_USER, 'READ');
+    my $perm = $metas->permissions($new_ms, $SHARE_WITH_USER, 'READ');
+    #diag(Dumper( $perm));
     ok($perm && ref($perm), 'Permissions set');
     is ($perm->{username}, $SHARE_WITH_USER, 'Permissions set to the right user');
     is ($perm->{permission}->{read}, 1, 'READ permission is set');
     isnt ($perm->{permission}->{write}, 1, 'WRITE permission is not set');
 
     # re read permissions
-    $perms = $meta->permissions($new_mt);
-    my ($dnalc_perm) = grep { $SHARE_WITH_USER eq $_->{username} } @$perms; 
-    ok( $dnalc_perm && ref($dnalc_perm), "Double checking user has permissions set");
-    is ($dnalc_perm->{permission}->{read}, 1, '2nd check: READ permission is set');
-    isnt ($dnalc_perm->{permission}->{write}, 1, '2nd check: WRITE permission is not set');
+    $perms = $metas->permissions($new_ms->{uuid});
+    my ($user_perms) = grep { $SHARE_WITH_USER eq $_->{username} } @$perms; 
+    ok( $user_perms && ref($user_perms), "Double checking user has permissions set");
+    is ($user_perms->{permission}->{read}, 1, '2nd check: READ permission is set');
+    isnt ($user_perms->{permission}->{write}, 1, '2nd check: WRITE permission is not set');
 
-
-    $perm = $meta->delete_permissions($new_mt, $SHARE_WITH_USER);
+    $perm = $metas->delete_permissions($new_ms->{uuid}, $SHARE_WITH_USER);
     #print STDERR Dumper( $perm ), $/;
 
-    $perms = $meta->permissions($new_mt);
-    ($dnalc_perm) = grep { $SHARE_WITH_USER eq $_->{username} } @$perms; 
-    is( $dnalc_perm, undef, "User has permissions unset");
-
-}
+    $perms = $metas->permissions($new_ms);
+    ($user_perms) = grep { $SHARE_WITH_USER eq $_->{username} } @$perms; 
+    is( $user_perms, undef, "User has permissions unset");
 
     # create metadata object based on this schema
     # see if you can associate any Ids to it
