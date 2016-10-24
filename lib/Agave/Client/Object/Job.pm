@@ -7,13 +7,13 @@ Agave::Client::Object::Job - The great new Agave::Client::Object::Job!
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
 use overload '""' => sub { $_[0]->id; };
 
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 
 =head1 SYNOPSIS
 
@@ -138,5 +138,11 @@ sub is_finished {
 sub is_successful {
 	$_[0]->status eq 'FINISHED'
 }
+
+sub TO_JSON {
+	my $self = shift;
+	return { map {$_ => $self->{$_}} keys %$self};
+}
+
 
 1; # End of Agave::Client::Object::Application

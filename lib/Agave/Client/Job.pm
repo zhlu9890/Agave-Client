@@ -8,6 +8,7 @@ use base qw/Agave::Client::Base/;
 use Agave::Client::Object::Job ();
 use Agave::Client::Object::OutputFile ();
 use Try::Tiny;
+use JSON ();
 
 use Data::Dumper;
 
@@ -104,15 +105,19 @@ sub submit_job {
 		return $self->_error("Missing required argument(s)", \%required_options);
 	}
 
+	my $json = JSON->new->utf8;
 	my $resp = try {
-            $self->do_post('/', %post_content);
-        }
-        catch {
+			$self->do_post('/',
+					_content_type => 'application/json; charset=utf-8',
+					_body => $json->encode(\%post_content)
+				);
+		}
+		catch {
             if (ref($_) && $_->isa('Agave::Exceptions::HTTPError')) {
                 return {status => 'error', message => $_->code . ' ' . $_->message}
             }
 	        return $self->_error("JobEP: Unable to submit job." . (ref $_ ? $_->message : ''));
-        };
+	};
 	if (ref $resp) {
 		if ($resp->{id}) {
 			return { status => 'success', data => Agave::Client::Object::Job->new($resp) };
