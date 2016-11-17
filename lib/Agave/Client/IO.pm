@@ -10,7 +10,7 @@ use Data::Dumper;
 
 use Agave::Client::Object::File;
 use base qw/Agave::Client::Base/;
-
+use JSON ();
 
 =head1 NAME
 
@@ -404,14 +404,18 @@ $DB::single = 2;
 
 	$path = "/$path" unless $path =~ m/^\//;
 
+	my $json = JSON->new->utf8;
 	# to specify the systemid set the _sub_end_point to 'media/system/${systemid}'
 	# eg: media/system/data.iplantcollaborative.org
 	my %p = (
 			_sub_end_point => 'media',	# files/v2/media
-			urlToIngest => $$params{urlToIngest},
-			fileType => $$params{fileType} || '',
-			fileName => $$params{fileName} || '',
-			notifications => $$params{notifications} || ''
+			_content_type => 'application/json; charset=utf-8',
+			_body => $json->encode({
+				urlToIngest => $$params{urlToIngest},
+				fileType => $$params{fileType} || '',
+				fileName => $$params{fileName} || '',
+				notifications => $$params{notifications} || [],
+			}),
 		);
 	
 	my $resp = try {
