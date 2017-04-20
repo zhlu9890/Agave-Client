@@ -2,9 +2,11 @@
 
 use Test::More;
 
-my $TNUM = 11;
+my $TNUM = 14;
 plan tests => $TNUM;
 
+use File::Temp ();
+use File::Basename;
 use FindBin;
 use Data::Dumper;
 use Agave::Client ();
@@ -47,7 +49,7 @@ SKIP: {
 
     # read users directory 
     my $base_dir = '/' . $api->user;
-	my $dir_data = eval {$io->readdir($base_dir);};
+    my $dir_data = eval {$io->readdir($base_dir);};
     if (my $err = $@) {
         diag(ref $err ? $err->message . "\n" . $err->content : $err);
     }
@@ -61,16 +63,47 @@ SKIP: {
     ok( $dir->isa('Agave::Client::Object::File'),  "We received the right kind of object");
     is( $dir->name, '.', "We received the user's directory");
 
-	my $new_dir = '000-automated-test-' . rand(1000);
-	my $st = $io->mkdir($base_dir, $new_dir);
+    my $new_dir = '000-automated-test-' . rand(1000);
+    my $st = $io->mkdir($base_dir, $new_dir);
     is( $st->{status}, 'success', "Directory created successfully");
-    diag("Directory not removed: " . $st->{message})
+
+
+    # upload a file
+    my $content = 'Ana are mere.\nViorel vine și cere.';
+
+    my $fh = File::Temp->new(SUFFIX => '.txt');
+    print $fh $content;
+    $fh->close;
+
+    #$io->debug(1);
+
+    $st = $io->upload($base_dir . '/' . $new_dir, fileToUpload => $fh->filename);
+
+    sleep 3;
+    # get the contents of the uploaded file
+    my $remote_file = $base_dir . '/' . $new_dir . '/' . basename($fh->filename);
+    my $dcontent = $io->stream_file($remote_file, limit_size => 100);
+
+    is($content, $dcontent, "Streamed content matches the original");
+    
+    # let's get the whole thing now
+    $dcontent = $io->stream_file($remote_file);
+    is($content, $dcontent, "Streamed content matches the original (x2)");
+
+    # lets store the file first
+    my $dlfile = $fh->filename . '.copy';
+    $st = $io->stream_file($remote_file, save_to => $dlfile);
+    #diag(Dumper($st));
+    is(-s $fh->filename, -s $dlfile, "Downloaded file has the same size as the original");
+
+    # unlink the downloaded file
+    unlink $dlfile;
+
+    # remove the new directory
+    $st = eval {$io->remove($base_dir . '/' . $new_dir);};
+    diag("Directory not removed: " . ($st->{message}) || '')
         unless( $st->{status} eq 'success' );
 
-	eval {$io->remove($base_dir . '/' . $new_dir);};
-    unless ($@) {
-        $st = 1;
-    }
     ok ( $st, "Directory removed successfully");
 
 }
