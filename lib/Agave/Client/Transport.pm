@@ -39,6 +39,7 @@ use vars qw($VERSION $AGENT);
             metadata => 'meta/v2',
             metadataschema => 'meta/v2',
             postit => 'postits/v2',
+            profile => 'profiles/v2',
         );
 
     sub _get_end_point {
