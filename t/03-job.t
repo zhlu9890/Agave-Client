@@ -66,7 +66,6 @@ SKIP: {
 
 	my @stata = map { $$_{status} } @$history;
 	cmp_ok(scalar(grep {/PENDING|STAGED|SUBMITTING|RUNNING/} @stata), '>', 0, 'We have at least one known status' );
-	diag(join(' ', @stata));
 
     done_testing();
 }

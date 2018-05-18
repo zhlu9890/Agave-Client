@@ -2,7 +2,7 @@
 
 use Test::More;
 
-my $TNUM = 14;
+my $TNUM = 16;
 plan tests => $TNUM;
 
 use File::Temp ();
@@ -98,6 +98,13 @@ SKIP: {
 
     # unlink the downloaded file
     unlink $dlfile;
+
+
+    # let's get the history of this file
+    my $hist = $io->file_history($remote_file);
+    #diag(Dumper($hist));
+    ok($hist && 'ARRAY' eq ref $hist, 'We have history..');
+    is($hist->[0]->{createdBy}, $api->user, 'File history shows who created it');
 
     # remove the new directory
     $st = eval {$io->remove($base_dir . '/' . $new_dir);};
