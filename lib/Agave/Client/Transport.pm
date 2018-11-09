@@ -39,6 +39,7 @@ use vars qw($VERSION $AGENT);
             metadata => 'meta/v2',
             metadataschema => 'meta/v2',
             postit => 'postits/v2',
+            profile => 'profiles/v2',
         );
 
     sub _get_end_point {
@@ -313,6 +314,7 @@ use vars qw($VERSION $AGENT);
 			$END_POINT .= $params{_sub_end_point} =~ m|^/| 
 				? $params{_sub_end_point}
 				: '/' . $params{_sub_end_point};
+			delete $params{_sub_end_point};
 		}
         
         # Check for a request path
